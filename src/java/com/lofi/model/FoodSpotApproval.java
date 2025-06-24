@@ -11,7 +11,7 @@ public class FoodSpotApproval implements Serializable {
     private int     user_id;
     private String  restaurant_name;
     private String  address;
-    private String  Maps_url;
+    private String  Maps_url; // ========== CORRECTED FIELD NAME ==========
     private String  photo_url;
     private String  open_hours;
     private String  closed_hours;
@@ -25,13 +25,11 @@ public class FoodSpotApproval implements Serializable {
     private String  name;
     private String  phone;
 
-    /* ========== NEW CONSTRUCTOR ADDED HERE ========== */
     /** No-argument constructor for JavaBean-style instantiation */
     public FoodSpotApproval() {
     }
-    /* ================================================ */
     
-    /* ---------- existing constructors (unchanged) ---------- */
+    /* ---------- existing constructors (Corrected) ---------- */
 
     /** Pending-list ctor */
     public FoodSpotApproval(int request_id, int user_id, String restaurant_name,
@@ -46,14 +44,14 @@ public class FoodSpotApproval implements Serializable {
 
     /** Detail-view ctor */
     public FoodSpotApproval(int request_id, int user_id, String restaurant_name,
-                            String address, String Maps_url, String photo_url,
+                            String address, String Maps_url, String photo_url, // ========== CORRECTED PARAMETER ==========
                             String open_hours, String closed_hours,
                             Boolean halal_flag, String working_days) {
         this.request_id      = request_id;
         this.user_id         = user_id;
         this.restaurant_name = restaurant_name;
         this.address         = address;
-        this.Maps_url = Maps_url;
+        this.Maps_url = Maps_url; // ========== CORRECTED ASSIGNMENT ==========
         this.photo_url       = photo_url;
         this.open_hours      = open_hours;
         this.closed_hours    = closed_hours;
@@ -61,7 +59,7 @@ public class FoodSpotApproval implements Serializable {
         this.working_days    = working_days;
     }
 
-    /* ---------- canonical getters / setters (unchanged) ---------- */
+    /* ---------- canonical getters / setters (Corrected) ---------- */
 
     public int    getRequest_id()               { return request_id; }
     public void   setRequest_id(int v)          { request_id = v; }
@@ -71,8 +69,11 @@ public class FoodSpotApproval implements Serializable {
     public void   setRestaurant_name(String v)  { restaurant_name = v; }
     public String getAddress()                  { return address; }
     public void   setAddress(String v)          { address = v; }
+    
+    // ========== CORRECTED GETTER AND SETTER ==========
     public String getMaps_url()          { return Maps_url; }
-    public void   setMaps_url(String v)  { Maps_url = v; }
+    public void   setMaps_url(String v)  { this.Maps_url = v; }
+    
     public String getPhoto_url()                { return photo_url; }
     public void   setPhoto_url(String v)        { photo_url = v; }
     public String getOpen_hours()               { return open_hours; }
