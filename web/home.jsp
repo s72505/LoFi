@@ -59,22 +59,26 @@
                 </div>
             </div>
 
-            <div class="col-10 col-md-4">
-                <div class="card shadow text-center">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">My Favourites</h5>
-                        <a href="${pageContext.request.contextPath}/FavouriteServlet"
-                           class="btn btn-dark">View Favourites</a>
+            <%-- ==================== CHANGE IMPLEMENTED HERE ==================== --%>
+            <%-- This entire card is now only visible if the user's role is 'customer' --%>
+            <c:if test="${sessionScope.role == 'customer'}">
+                <div class="col-10 col-md-4">
+                    <div class="card shadow text-center">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">My Favourites</h5>
+                            <a href="${pageContext.request.contextPath}/FavouriteServlet"
+                               class="btn btn-dark">View Favourites</a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </c:if>
+            <%-- ================================================================= --%>
 
             <c:if test="${sessionScope.role == 'vendor'}">
                 <div class="col-10 col-md-4">
                     <div class="card shadow text-center bg-warning-subtle">
                         <div class="card-body">
                             <h5 class="card-title mb-3">Vendor Dashboard</h5>
-                            <%-- This single button now correctly links to the vendor's main hub --%>
                             <a href="VendorDashboardServlet" class="btn btn-warning">Manage My Submissions</a>
                         </div>
                     </div>
@@ -97,28 +101,22 @@
         <c:if test="${sessionScope.role == 'customer'}">
             <hr class="text-white my-4">
             <h4 class="text-white text-center mb-3">Your Favourite Spots</h4>
-
             <div class="row row-cols-1 justify-content-center row-cols-md-3 g-3">
                 <c:forEach var="f" items="${requestScope.quickFavs}">
                     <div class="col">
                         <div class="card h-100 text-center">
-                            <%-- The link below should point to a servlet that displays menu items for a spot --%>
                             <a href="MenuServlet?id=${f.spotId}" class="stretched-link"></a>
                             <div class="card-body d-flex align-items-center justify-content-center">
-                                <h6 class="card-title mb-0 fw-semibold">
-                                    ${f.restaurantName}
-                                </h6>
+                                <h6 class="card-title mb-0 fw-semibold">${f.restaurantName}</h6>
                             </div>
                         </div>
                     </div>
                 </c:forEach>
-
                 <c:if test="${empty quickFavs}">
                     <p class="text-center text-white-50">No favourites yet.</p>
                 </c:if>
             </div>
         </c:if>
-
     </main>
 
     <footer class="text-center text-white-50 py-3">
