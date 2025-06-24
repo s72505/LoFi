@@ -2,7 +2,6 @@
 <%@page session="true"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<!-- ===== the *exact* tint / blur recipe reused from favourites.jsp ===== -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +17,6 @@
 </head>
 <body class="vh-100 d-flex flex-column h-100 overflow-auto">
 
-<!-- blurred BG + tint (identical to other pages) -->
 <div class="position-fixed top-0 start-0 w-100 h-100"
      style="background:url('img/loginBackground.jpg') center/cover no-repeat fixed;
             filter:blur(5px); z-index:0;"></div>
@@ -27,7 +25,6 @@
 
 <div class="d-flex flex-column h-100" style="z-index:1; position:relative;">
 
-    <!-- header -->
     <header class="container-fluid py-2">
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
@@ -42,8 +39,14 @@
         </div>
     </header>
 
-    <!-- main -->
     <main class="container my-4 flex-grow-1 overflow-auto pt-3">
+    
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+            <a href="newSubmission.jsp" class="btn btn-primary btn-lg shadow">
+                <i class="fas fa-plus-circle me-2"></i>Create New Food Spot Submission
+            </a>
+        </div>
+
         <div class="card shadow-lg">
             <div class="card-body">
 
@@ -101,7 +104,6 @@
         </div>
     </main>
 
-    <!-- footer -->
     <footer class="text-center text-white-50 py-3 mt-auto">
         © 2025 LoFi · <a href="mailto:support@lofi.my" class="text-white-50">support@lofi.my</a>
     </footer>

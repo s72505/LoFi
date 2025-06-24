@@ -51,7 +51,7 @@ public final class AdminDAO {
     public static FoodSpotApproval findFoodSpotApproval(int requestId) throws SQLException {
 
         String sql = """
-            SELECT request_id, user_id, restaurant_name, address, google_maps_url,
+            SELECT request_id, user_id, restaurant_name, address, Maps_url,
                    photo_url, open_hours, closed_hours, halal_flag, working_days
               FROM food_spot_approval
              WHERE request_id=? 
@@ -70,7 +70,7 @@ public final class AdminDAO {
                         r.getInt   ("user_id"),
                         r.getString("restaurant_name"),
                         r.getString("address"),
-                        r.getString("google_maps_url"),
+                        r.getString("Maps_url"),
                         r.getString("photo_url"),
                         r.getString("open_hours"),
                         r.getString("closed_hours"),
@@ -119,7 +119,7 @@ public final class AdminDAO {
     }
 
     /* ------------------------------------------------------------
-       4.  APPROVE / REJECT
+       4.  APPROVE / REJECT A SUBMISSION (EXISTING METHOD)
        ------------------------------------------------------------ */
     public static void reviewRequest(int requestId,
                                      boolean approveSpot,
@@ -142,7 +142,7 @@ public final class AdminDAO {
                 /* insert live spot */
                 try (PreparedStatement ins = c.prepareStatement(
                         "INSERT INTO food_spots " +
-                        "(user_id, restaurant_name, address, google_maps_url, photo_url, " +
+                        "(user_id, restaurant_name, address, Maps_url, photo_url, " +
                         " halal_flag, open_hours, closed_hours, working_days, rating) " +
                         "VALUES (?,?,?,?,?,?,?,?,?,0.0)",
                         Statement.RETURN_GENERATED_KEYS)) {
@@ -223,25 +223,75 @@ public final class AdminDAO {
         }
     }
     
-    // In AdminDAO.java or a new DAO file
-    public static void createFoodSpotSubmission(FoodSpotApproval submission) throws SQLException {
-        String sql = "INSERT INTO food_spot_approval (user_id, restaurant_name, address, Maps_url, photo_url, open_hours, closed_hours, halal_flag, working_days, submitted_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection c = DBHelper.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+    /* ------------------------------------------------------------
+       5.  CREATE NEW SUBMISSION (NEW METHOD FOR VENDOR SUBMISSION)
+       ------------------------------------------------------------ */
+    public static void createSubmission(FoodSpotApproval spot, List<MenuApproval> menus) throws SQLException {
+        String spotSQL = "INSERT INTO food_spot_approval (user_id, restaurant_name, address, Maps_url, photo_url, open_hours, closed_hours, halal_flag, working_days, submitted_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String menuSQL = "INSERT INTO menu_approval (request_id, dish_name, price, description, cuisine_type, image_url, submitted_time) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        
+        Connection con = null;
+        PreparedStatement psSpot = null;
+        PreparedStatement psMenu = null;
+        ResultSet generatedKeys = null;
+        int requestId = 0;
 
-            ps.setInt(1, submission.getUser_id());
-            ps.setString(2, submission.getRestaurant_name());
-            ps.setString(3, submission.getAddress());
-            ps.setString(4, submission.getGoogle_maps_url());
-            ps.setString(5, submission.getPhoto_url());
-            ps.setString(6, submission.getOpen_hours());
-            ps.setString(7, submission.getClosed_hours());
-            ps.setBoolean(8, submission.getHalal_flag());
-            ps.setString(9, submission.getWorking_days());
-            ps.setTimestamp(10, java.sql.Timestamp.valueOf(submission.getSubmitted_time()));
+        try {
+            con = DBHelper.getConnection();
+            con.setAutoCommit(false); // Start transaction
 
-            ps.executeUpdate();
+            // Insert into food_spot_approval
+            psSpot = con.prepareStatement(spotSQL, Statement.RETURN_GENERATED_KEYS);
+            psSpot.setInt(1, spot.getUser_id());
+            psSpot.setString(2, spot.getRestaurant_name());
+            psSpot.setString(3, spot.getAddress());
+            psSpot.setString(4, spot.getGoogle_maps_url());
+            psSpot.setString(5, spot.getPhoto_url());
+            psSpot.setString(6, spot.getOpen_hours());
+            psSpot.setString(7, spot.getClosed_hours());
+            psSpot.setBoolean(8, spot.getHalal_flag());
+            psSpot.setString(9, spot.getWorking_days());
+            psSpot.setTimestamp(10, java.sql.Timestamp.valueOf(spot.getSubmitted_time()));
+            psSpot.executeUpdate();
+
+            generatedKeys = psSpot.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                requestId = generatedKeys.getInt(1);
+            } else {
+                throw new SQLException("Creating food spot approval failed, no ID obtained.");
+            }
+
+            // Insert into menu_approval
+            psMenu = con.prepareStatement(menuSQL);
+            for (MenuApproval item : menus) {
+                psMenu.setInt(1, requestId);
+                psMenu.setString(2, item.getDish_name());
+                psMenu.setDouble(3, item.getPrice());
+                psMenu.setString(4, item.getDescription());
+                psMenu.setString(5, item.getCuisine_type());
+                psMenu.setString(6, item.getImage_url());
+                psMenu.setTimestamp(7, java.sql.Timestamp.valueOf(spot.getSubmitted_time()));
+                psMenu.addBatch();
+            }
+            psMenu.executeBatch();
+
+            con.commit(); // Commit transaction
+
+        } catch (SQLException e) {
+            if (con != null) {
+                try {
+                    con.rollback(); // Rollback on error
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            throw e; // Re-throw the exception to be handled by the servlet
+        } finally {
+            // Clean up resources
+            if (generatedKeys != null) generatedKeys.close();
+            if (psSpot != null) psSpot.close();
+            if (psMenu != null) psMenu.close();
+            if (con != null) con.close();
         }
     }
-
 }
