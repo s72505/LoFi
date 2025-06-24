@@ -150,7 +150,7 @@ public final class AdminDAO {
                     ins.setInt   (1, hdr.getUser_id());
                     ins.setString(2, hdr.getRestaurant_name());
                     ins.setString(3, hdr.getAddress());
-                    ins.setString(4, hdr.getGoogle_maps_url());
+                    ins.setString(4, hdr.getMaps_url());
                     ins.setString(5, hdr.getPhoto_url());
 
                     if (hdr.getHalal_flag() == null) ins.setNull(6, Types.BOOLEAN);
@@ -245,7 +245,7 @@ public final class AdminDAO {
             psSpot.setInt(1, spot.getUser_id());
             psSpot.setString(2, spot.getRestaurant_name());
             psSpot.setString(3, spot.getAddress());
-            psSpot.setString(4, spot.getGoogle_maps_url());
+            psSpot.setString(4, spot.getMaps_url());
             psSpot.setString(5, spot.getPhoto_url());
             psSpot.setString(6, spot.getOpen_hours());
             psSpot.setString(7, spot.getClosed_hours());

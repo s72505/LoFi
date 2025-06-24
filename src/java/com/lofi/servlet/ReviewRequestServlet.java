@@ -46,7 +46,7 @@ public class ReviewRequestServlet extends HttpServlet {
             session.setAttribute("requestID"      , hdr.getRequest_id());
             session.setAttribute("restaurantName" , hdr.getRestaurant_name());
             session.setAttribute("address"        , hdr.getAddress());
-            session.setAttribute("googleMapsURL"  , hdr.getGoogle_maps_url());
+            session.setAttribute("googleMapsURL"  , hdr.getMaps_url());
             session.setAttribute("photoURL"       , hdr.getPhoto_url());
             session.setAttribute("openHours"      , hdr.getOpen_hours());
             session.setAttribute("closedHours"    , hdr.getClosed_hours());

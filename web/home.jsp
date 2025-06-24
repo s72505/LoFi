@@ -16,17 +16,14 @@
 
 <body class="vh-100 d-flex flex-column h-100" style="background:rgba(0,0,0,.5)">
 
-<!-- blurred BG + tint -->
 <div class="position-fixed top-0 start-0 w-100 h-100"
      style="background:url('img/loginBackground.jpg') center/cover no-repeat fixed;
             filter:blur(5px);z-index:0;"></div>
 <div class="position-fixed top-0 start-0 w-100 h-100"
      style="background:rgba(0,0,0,.55);z-index:0;"></div>
 
-<!-- ========= wrapper ========= -->
 <div class="d-flex flex-column h-100" style="z-index:1;position:relative;">
 
-    <!-- ===== header ===== -->
     <header class="container-fluid py-2">
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
@@ -41,11 +38,9 @@
         </div>
     </header>
 
-    <!-- ===== centre cards ===== -->
     <main class="container my-auto flex-grow-1 overflow-auto pt-5">
         <div class="row g-4 justify-content-center">
 
-            <!-- Search -->
             <div class="col-10 col-md-4">
                 <div class="card text-center">
                     <div class="card-body">
@@ -55,7 +50,6 @@
                 </div>
             </div>
 
-            <!-- Profile -->
             <div class="col-10 col-md-4">
                 <div class="card shadow text-center">
                     <div class="card-body">
@@ -65,7 +59,6 @@
                 </div>
             </div>
 
-            <!-- Favourites -->
             <div class="col-10 col-md-4">
                 <div class="card shadow text-center">
                     <div class="card-body">
@@ -76,20 +69,18 @@
                 </div>
             </div>
 
-            <!-- Vendor extra -->
             <c:if test="${sessionScope.role == 'vendor'}">
                 <div class="col-10 col-md-4">
                     <div class="card shadow text-center bg-warning-subtle">
                         <div class="card-body">
                             <h5 class="card-title mb-3">Vendor Dashboard</h5>
-                            <a href="VendorDashboardServlet" class="btn btn-warning">Check Status</a>
-                            <a href="addMenuServlet" class="btn btn-warning">Submit Request</a>
+                            <%-- This single button now correctly links to the vendor's main hub --%>
+                            <a href="VendorDashboardServlet" class="btn btn-warning">Manage My Submissions</a>
                         </div>
                     </div>
                 </div>
             </c:if>
 
-            <!-- Admin extra -->
             <c:if test="${sessionScope.role == 'admin'}">
                 <div class="col-10 col-md-4">
                     <div class="card shadow text-center bg-info-subtle">
@@ -103,7 +94,6 @@
 
         </div>
 
-        <!-- ===== quick-access favourites (max 3) ===== -->
         <c:if test="${sessionScope.role == 'customer'}">
             <hr class="text-white my-4">
             <h4 class="text-white text-center mb-3">Your Favourite Spots</h4>
@@ -112,9 +102,9 @@
                 <c:forEach var="f" items="${requestScope.quickFavs}">
                     <div class="col">
                         <div class="card h-100 text-center">
+                            <%-- The link below should point to a servlet that displays menu items for a spot --%>
                             <a href="MenuServlet?id=${f.spotId}" class="stretched-link"></a>
                             <div class="card-body d-flex align-items-center justify-content-center">
-                                <!-- USE restaurantName (matches DB column & Java bean) -->
                                 <h6 class="card-title mb-0 fw-semibold">
                                     ${f.restaurantName}
                                 </h6>
@@ -131,7 +121,6 @@
 
     </main>
 
-    <!-- ===== footer ===== -->
     <footer class="text-center text-white-50 py-3">
         © 2025 LoFi&nbsp;· Contact:
         <a href="mailto:support@lofi.my" class="text-white-50">support@lofi.my</a>

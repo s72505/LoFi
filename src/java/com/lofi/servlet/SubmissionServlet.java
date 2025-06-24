@@ -61,7 +61,7 @@ public class SubmissionServlet extends HttpServlet {
         FoodSpotApproval spot = new FoodSpotApproval();
         spot.setRestaurant_name(request.getParameter("restaurantName"));
         spot.setAddress(request.getParameter("address"));
-        spot.setGoogle_maps_url(request.getParameter("googleMapsURL"));
+        spot.setMaps_url(request.getParameter("googleMapsURL"));
         spot.setPhoto_url(request.getParameter("photoURL"));
         spot.setOpen_hours(request.getParameter("openHours"));
         spot.setClosed_hours(request.getParameter("closedHours"));
