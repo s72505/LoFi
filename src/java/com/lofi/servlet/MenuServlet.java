@@ -3,6 +3,8 @@ package com.lofi.servlet;
 import com.lofi.dao.FoodSpotDAO;
 import com.lofi.model.FoodSpot;
 import com.lofi.model.MenuItem;
+import com.lofi.dao.ReviewDAO;
+import com.lofi.model.Review;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -26,9 +28,16 @@ public class MenuServlet extends HttpServlet {
             // Fetch the list of menu items for that spot
             List<MenuItem> menuItems = FoodSpotDAO.listMenuItemsBySpotId(spotId);
 
+            // ========== CODE TO FETCH REVIEWS IMPLEMENTED HERE ==========
+            List<Review> reviews = ReviewDAO.getReviewsBySpotId(spotId);
+
             if (spot != null) {
+                // Set all necessary data as request attributes
                 request.setAttribute("spot", spot);
                 request.setAttribute("menuItems", menuItems);
+                request.setAttribute("reviews", reviews); // Pass the reviews to the JSP
+                
+                // Forward to the JSP page
                 request.getRequestDispatcher("menu.jsp").forward(request, response);
             } else {
                 // Handle case where food spot is not found

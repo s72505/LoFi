@@ -133,6 +133,18 @@ public final class FoodSpotDAO {
     }
     // ===============================================
     
+        // ========== NEW METHOD TO UPDATE A SPOT'S RATING ==========
+    public static void updateRating(int spotId, double newRating) throws SQLException {
+        String sql = "UPDATE food_spots SET rating = ? WHERE spot_id = ?";
+        try (Connection c = DBHelper.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            
+            ps.setDouble(1, newRating);
+            ps.setInt(2, spotId);
+            ps.executeUpdate();
+        }
+    }
+    
     private static FoodSpot map(ResultSet r) throws SQLException {
         FoodSpot f = new FoodSpot();
         f.setSpotId(r.getInt("spot_id"));

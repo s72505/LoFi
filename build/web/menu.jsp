@@ -76,6 +76,61 @@
                  </c:if>
              </div>
         </div>
+        
+        <%-- ================================================= --%>
+        <%-- ========== NEW REVIEW SECTION STARTS HERE ========== --%>
+        <%-- ================================================= --%>
+        <div class="container py-4">
+             <h2 class="text-center text-white mb-4">Reviews & Ratings</h2>
+             
+             <c:if test="${sessionScope.role eq 'customer'}">
+                 <div class="card shadow-sm mb-4">
+                     <div class="card-header bg-light">
+                         <h5 class="mb-0">Leave a Review</h5>
+                     </div>
+                     <div class="card-body">
+                         <form action="AddReviewServlet" method="post">
+                             <input type="hidden" name="spotId" value="${spot.spotId}">
+                             <div class="mb-3">
+                                 <label for="rating" class="form-label">Your Rating</label>
+                                 <select name="rating" id="rating" class="form-select" required>
+                                     <option value="5" selected>★★★★★ (Excellent)</option>
+                                     <option value="4">★★★★☆ (Good)</option>
+                                     <option value="3">★★★☆☆ (Average)</option>
+                                     <option value="2">★★☆☆☆ (Poor)</option>
+                                     <option value="1">★☆☆☆☆ (Terrible)</option>
+                                 </select>
+                             </div>
+                             <div class="mb-3">
+                                 <label for="comment" class="form-label">Your Comment</label>
+                                 <textarea name="comment" id="comment" rows="3" class="form-control" placeholder="Share your experience..." required></textarea>
+                             </div>
+                             <button type="submit" class="btn btn-primary">Submit Review</button>
+                         </form>
+                     </div>
+                 </div>
+             </c:if>
+
+             <c:choose>
+                 <c:when test="${not empty reviews}">
+                     <c:forEach var="review" items="${reviews}">
+                         <div class="card shadow-sm mb-3">
+                             <div class="card-body">
+                                 <h6 class="card-title mb-1">${review.userName}</h6>
+                                 <p class="card-subtitle mb-2 text-warning">
+                                     <c:forEach begin="1" end="${review.rating}">★</c:forEach><c:forEach begin="${review.rating + 1}" end="5">☆</c:forEach>
+                                 </p>
+                                 <p class="card-text">${review.comment}</p>
+                                 <small class="text-muted">Reviewed on: ${review.createdAt}</small>
+                             </div>
+                         </div>
+                     </c:forEach>
+                 </c:when>
+                 <c:otherwise>
+                     <div class="alert alert-light text-center">Be the first to leave a review for this spot!</div>
+                 </c:otherwise>
+             </c:choose>
+        </div>
     </main>
 
     <footer class="text-center text-white-50 py-3 mt-auto">
