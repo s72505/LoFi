@@ -5,7 +5,6 @@
 <head>
     <title>Submission Received - LoFi</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
-    <%-- Re-using the same styling from other pages --%>
     <style>
         body  { background:rgba(0,0,0,.5) }
         .card { background:#f3ece2; opacity:.90; }
@@ -28,10 +27,12 @@
                         <c:when test="${not empty message}">
                             <div class="alert alert-success">
                                 <h4 class="alert-heading">Success!</h4>
-                                <%-- ========== CORRECTED VARIABLE NAME HERE ========== --%>
                                 <p>${message}</p>
                             </div>
-                            <a href="vendorDashboard.jsp" class="btn btn-primary mt-3">Return to Dashboard</a>
+                            
+                            <%-- ==================== THIS LINK IS NOW CORRECTED ==================== --%>
+                            <a href="VendorDashboardServlet" class="btn btn-primary mt-3">Return to Dashboard</a>
+                            
                         </c:when>
                         <c:otherwise>
                             <div class="alert alert-danger">
