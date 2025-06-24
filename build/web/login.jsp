@@ -101,8 +101,6 @@
 
                             <button class="btn btn-dark btn-lg w-100 mb-3" type="submit">Login</button>
 
-                            <a class="small text-muted d-block mb-3" href="#">Forgot password?</a>
-
                             <p class="mb-2">
                                 Don't have an account?
                                 <a href="register.jsp" class="fw-semibold">Register here</a>
