@@ -144,6 +144,7 @@ public final class AdminDAO {
                 psMenu.setString(6, item.getImage_url());
                 psMenu.setTimestamp(7, java.sql.Timestamp.valueOf(spot.getSubmitted_time()));
                 psMenu.addBatch();
+               
             }
             psMenu.executeBatch();
             con.commit();
