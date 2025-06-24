@@ -29,8 +29,6 @@
                                 <h4 class="alert-heading">Success!</h4>
                                 <p>${message}</p>
                             </div>
-                            
-                            <%-- ==================== THIS LINK IS NOW CORRECTED ==================== --%>
                             <a href="VendorDashboardServlet" class="btn btn-primary mt-3">Return to Dashboard</a>
                             
                         </c:when>

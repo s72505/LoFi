@@ -36,11 +36,12 @@
             <header class="container-fluid py-2">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
+                        <a href="Home" class="btn btn-sm btn-outline-light me-3">
+                            <i class="fas fa-arrow-left"></i> Back to Home
+                        </a>
                         <img src="img/LoFi.png" alt="LoFi" class="rounded-circle me-2" style="height:48px;">
                         <span class="h4 mb-0 text-white">Local Food Finder</span>
                     </div>
-                    
-                    <%-- ========== THIS IS THE CORRECTED LINE ========== --%>
                     <form action="Logout" method="get" class="m-0">
                         <button class="btn btn-sm btn-outline-light">
                             <i class="fa fa-sign-out-alt me-1"></i> Logout

@@ -36,20 +36,6 @@
                 });
             </script>
         </c:if>
-
-        <%-- <c:if test="${param.pwdErr == 'mismatch'}">
-            <div class="alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
-                 style="z-index:2000;" role="alert">
-                The two new passwords don’t match.
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <script>
-                window.addEventListener('DOMContentLoaded', () => {
-                    new bootstrap.Modal(document.getElementById('pwdModal')).show();
-                });
-            </script>
-        </c:if> --%>
-        
         <c:if test="${param.pwdErr == 'same'}">
             <div class="alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
                  style="z-index:2000;" role="alert">
@@ -86,7 +72,10 @@
             <!-- ===== header ===== -->
             <header class="container-fluid py-2">
                 <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center">'
+                        <a href="Home" class="btn btn-sm btn-outline-light me-3">
+                           <i class="fas fa-arrow-left"></i> Back to Home
+                        </a>
                         <img src="img/LoFi.png" alt="LoFi logo" class="rounded-circle me-2" style="height:48px;">
                         <span class="h4 mb-0 text-white">Local Food Finder</span>
                     </div>

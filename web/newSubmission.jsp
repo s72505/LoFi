@@ -27,13 +27,13 @@
     <header class="container-fluid py-2">
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
+                <a href="VendorDashboardServlet" class="btn btn-sm btn-outline-light me-2">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                </a>
                 <img src="img/LoFi.png" alt="LoFi" class="rounded-circle me-2" style="height:48px;">
                 <span class="h4 mb-0 text-white">Local Food Finder – New Submission</span>
             </div>
             <div>
-                <a href="vendorDashboard.jsp" class="btn btn-sm btn-outline-light me-2">
-                    <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
-                </a>
                 <a href="Logout" class="btn btn-sm btn-outline-light">
                     <i class="fas fa-sign-out-alt me-1"></i> Logout
                 </a>
