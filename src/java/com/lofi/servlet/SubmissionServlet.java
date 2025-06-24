@@ -62,7 +62,7 @@ public class SubmissionServlet extends HttpServlet {
         spot.setRestaurant_name(request.getParameter("restaurantName"));
         spot.setAddress(request.getParameter("address"));
 
-        // ========== ENSURE THIS LINE IS CORRECT ==========
+        // ========== CORRECTED METHOD CALL HERE ==========
         spot.setMaps_url(request.getParameter("googleMapsURL"));
 
         spot.setPhoto_url(request.getParameter("photoURL"));
@@ -78,7 +78,6 @@ public class SubmissionServlet extends HttpServlet {
     private void handleAddMenu(HttpServletRequest request, HttpSession session) {
         List<MenuApproval> menus = (List<MenuApproval>) session.getAttribute("submissionMenus");
         if (menus == null) {
-            // Should not happen if flow is correct, but handle it gracefully
             menus = new ArrayList<>();
         }
         
