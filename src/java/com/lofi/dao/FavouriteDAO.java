@@ -55,7 +55,7 @@ public final class FavouriteDAO {
                 f.setSpotId(rs.getInt("spot_id"));
                 f.setRestaurantName(rs.getString("restaurant_name"));
                 f.setAddress(rs.getString("address"));
-                f.setGoogleMapsUrl(rs.getString("google_maps_url"));
+                f.setGoogleMapsUrl(rs.getString("Maps_url"));
                 f.setHalalFlag(rs.getBoolean("halal_flag"));
                 f.setOpenHours(rs.getString("open_hours"));
                 f.setClosedHours(rs.getString("closed_hours"));

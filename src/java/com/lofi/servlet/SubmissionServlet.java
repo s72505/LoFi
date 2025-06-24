@@ -109,7 +109,7 @@ public class SubmissionServlet extends HttpServlet {
             session.removeAttribute("submissionMenus");
 
             request.setAttribute("message", "Submission successful! Your request is now pending admin approval.");
-            request.getRequestDispatcher("submissionResult.jsp").forward(request, response);
+            request.getRequestDispatcher("submissionResults.jsp").forward(request, response);
             return; // ========== DEFENSIVE RETURN ADDED ==========
 
         } catch (SQLException e) {
