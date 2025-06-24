@@ -6,12 +6,11 @@ import java.time.LocalDateTime;
 public class FoodSpotApproval implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    // --- All fields ---
     private int     request_id;
     private int     user_id;
     private String  restaurant_name;
     private String  address;
-    private String  Maps_url; // CORRECTED
+    private String  Maps_url;
     private String  photo_url;
     private String  open_hours;
     private String  closed_hours;
@@ -23,11 +22,9 @@ public class FoodSpotApproval implements Serializable {
     private String  name;
     private String  phone;
 
-    // --- Constructors ---
     public FoodSpotApproval() {}
 
-    public FoodSpotApproval(int request_id, int user_id, String restaurant_name,
-                            String name, String phone, LocalDateTime submitted_time) {
+    public FoodSpotApproval(int request_id, int user_id, String restaurant_name, String name, String phone, LocalDateTime submitted_time) {
         this.request_id = request_id;
         this.user_id = user_id;
         this.restaurant_name = restaurant_name;
@@ -36,15 +33,12 @@ public class FoodSpotApproval implements Serializable {
         this.submitted_time = submitted_time;
     }
 
-    public FoodSpotApproval(int request_id, int user_id, String restaurant_name,
-                            String address, String Maps_url, String photo_url, // CORRECTED
-                            String open_hours, String closed_hours,
-                            Boolean halal_flag, String working_days) {
+    public FoodSpotApproval(int request_id, int user_id, String restaurant_name, String address, String Maps_url, String photo_url, String open_hours, String closed_hours, Boolean halal_flag, String working_days) {
         this.request_id = request_id;
         this.user_id = user_id;
         this.restaurant_name = restaurant_name;
         this.address = address;
-        this.Maps_url = Maps_url; // CORRECTED
+        this.Maps_url = Maps_url;
         this.photo_url = photo_url;
         this.open_hours = open_hours;
         this.closed_hours = closed_hours;
@@ -52,7 +46,6 @@ public class FoodSpotApproval implements Serializable {
         this.working_days = working_days;
     }
 
-    // --- Getters and Setters ---
     public int getRequest_id() { return request_id; }
     public void setRequest_id(int v) { request_id = v; }
     public int getUser_id() { return user_id; }
@@ -61,11 +54,8 @@ public class FoodSpotApproval implements Serializable {
     public void setRestaurant_name(String v) { restaurant_name = v; }
     public String getAddress() { return address; }
     public void setAddress(String v) { address = v; }
-
-    // ========== CORRECTED GETTER AND SETTER ==========
     public String getMaps_url() { return Maps_url; }
     public void setMaps_url(String v) { this.Maps_url = v; }
-
     public String getPhoto_url() { return photo_url; }
     public void setPhoto_url(String v) { photo_url = v; }
     public String getOpen_hours() { return open_hours; }
@@ -86,8 +76,6 @@ public class FoodSpotApproval implements Serializable {
     public void setName(String v) { name = v; }
     public String getPhone() { return phone; }
     public void setPhone(String v) { phone = v; }
-    
-    // --- Convenience Getters ---
     public int getRequestID() { return request_id; }
     public String getRestaurantName() { return restaurant_name; }
     public LocalDateTime getSubmittedTime() { return submitted_time; }

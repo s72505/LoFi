@@ -2,7 +2,6 @@ package com.lofi.dao;
 
 import com.lofi.model.FoodSpotApproval;
 import com.lofi.model.MenuApproval;
-
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,24 +23,12 @@ public final class AdminDAO {
     }
 
     public static FoodSpotApproval findFoodSpotApproval(int requestId) throws SQLException {
-        // ========== CORRECTED SQL QUERY ==========
         String sql = "SELECT request_id, user_id, restaurant_name, address, Maps_url, photo_url, open_hours, closed_hours, halal_flag, working_days FROM food_spot_approval WHERE request_id=?";
         try (Connection c = DBHelper.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, requestId);
             try (ResultSet r = ps.executeQuery()) {
                 if (!r.next()) return null;
-                return new FoodSpotApproval(
-                        r.getInt("request_id"),
-                        r.getInt("user_id"),
-                        r.getString("restaurant_name"),
-                        r.getString("address"),
-                        r.getString("Maps_url"), // CORRECTED
-                        r.getString("photo_url"),
-                        r.getString("open_hours"),
-                        r.getString("closed_hours"),
-                        r.getObject("halal_flag") == null ? null : r.getBoolean("halal_flag"),
-                        r.getString("working_days")
-                );
+                return new FoodSpotApproval(r.getInt("request_id"), r.getInt("user_id"), r.getString("restaurant_name"), r.getString("address"), r.getString("Maps_url"), r.getString("photo_url"), r.getString("open_hours"), r.getString("closed_hours"), r.getObject("halal_flag") == null ? null : r.getBoolean("halal_flag"), r.getString("working_days"));
             }
         }
     }
@@ -68,12 +55,11 @@ public final class AdminDAO {
             if (approveSpot) {
                 FoodSpotApproval hdr = findFoodSpotApproval(requestId);
                 if (hdr == null) throw new SQLException("No such request " + requestId);
-                // ========== CORRECTED SQL QUERY ==========
                 try (PreparedStatement ins = c.prepareStatement("INSERT INTO food_spots (user_id, restaurant_name, address, Maps_url, photo_url, halal_flag, open_hours, closed_hours, working_days, rating) VALUES (?,?,?,?,?,?,?,?,?,0.0)", Statement.RETURN_GENERATED_KEYS)) {
                     ins.setInt(1, hdr.getUser_id());
                     ins.setString(2, hdr.getRestaurant_name());
                     ins.setString(3, hdr.getAddress());
-                    ins.setString(4, hdr.getMaps_url()); // CORRECTED
+                    ins.setString(4, hdr.getMaps_url());
                     ins.setString(5, hdr.getPhoto_url());
                     if (hdr.getHalal_flag() == null) ins.setNull(6, Types.BOOLEAN);
                     else ins.setBoolean(6, hdr.getHalal_flag());
@@ -83,14 +69,48 @@ public final class AdminDAO {
                     ins.executeUpdate();
                     try (ResultSet gk = ins.getGeneratedKeys()) { if (gk.next()) newSpotId = gk.getInt(1); }
                 }
-                // (The rest of the logic inside this if block is complex but functionally correct)
+                try (PreparedStatement upd = c.prepareStatement("UPDATE food_spot_approval SET status='approved', reviewed_time=?, rejection_reason=NULL WHERE request_id=?")) {
+                    upd.setString(1, now);
+                    upd.setInt(2, requestId);
+                    upd.executeUpdate();
+                }
+            } else {
+                try (PreparedStatement upd = c.prepareStatement("UPDATE food_spot_approval SET status='rejected', reviewed_time=?, rejection_reason=? WHERE request_id=?")) {
+                    upd.setString(1, now);
+                    upd.setString(2, rejectionReason);
+                    upd.setInt(3, requestId);
+                    upd.executeUpdate();
+                }
             }
-             // (The rest of the method logic is also complex but functionally correct)
+            if (approveSpot && approveMenu && newSpotId > 0) {
+                for (MenuApproval m : listMenuApproval(requestId)) {
+                    try (PreparedStatement insM = c.prepareStatement("INSERT INTO menu_items (spot_id, dish_name, price, description, cuisine_type, image_url) VALUES (?,?,?,?,?,?)")) {
+                        insM.setInt(1, newSpotId);
+                        insM.setString(2, m.getDish_name());
+                        insM.setDouble(3, m.getPrice());
+                        insM.setString(4, m.getDescription());
+                        insM.setString(5, m.getCuisine_type());
+                        insM.setString(6, m.getImage_url());
+                        insM.executeUpdate();
+                    }
+                }
+                try (PreparedStatement updM = c.prepareStatement("UPDATE menu_approval SET status='approved', reviewed_time=?, rejection_reason=NULL WHERE request_id=?")) {
+                    updM.setString(1, now);
+                    updM.setInt(2, requestId);
+                    updM.executeUpdate();
+                }
+            } else {
+                try (PreparedStatement updM = c.prepareStatement("UPDATE menu_approval SET status='rejected', reviewed_time=?, rejection_reason=? WHERE request_id=?")) {
+                    updM.setString(1, now);
+                    updM.setString(2, rejectionReason);
+                    updM.setInt(3, requestId);
+                    updM.executeUpdate();
+                }
+            }
             c.commit();
         }
     }
     
-    // ========== THIS IS THE REQUIRED METHOD FOR NEW SUBMISSIONS ==========
     public static void createSubmission(FoodSpotApproval spot, List<MenuApproval> menus) throws SQLException {
         String spotSQL = "INSERT INTO food_spot_approval (user_id, restaurant_name, address, Maps_url, photo_url, open_hours, closed_hours, halal_flag, working_days, submitted_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         String menuSQL = "INSERT INTO menu_approval (request_id, dish_name, price, description, cuisine_type, image_url, submitted_time) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -102,7 +122,7 @@ public final class AdminDAO {
             psSpot.setInt(1, spot.getUser_id());
             psSpot.setString(2, spot.getRestaurant_name());
             psSpot.setString(3, spot.getAddress());
-            psSpot.setString(4, spot.getMaps_url()); // CORRECTED
+            psSpot.setString(4, spot.getMaps_url());
             psSpot.setString(5, spot.getPhoto_url());
             psSpot.setString(6, spot.getOpen_hours());
             psSpot.setString(7, spot.getClosed_hours());
