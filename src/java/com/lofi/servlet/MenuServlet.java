@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -28,14 +29,23 @@ public class MenuServlet extends HttpServlet {
             // Fetch the list of menu items for that spot
             List<MenuItem> menuItems = FoodSpotDAO.listMenuItemsBySpotId(spotId);
 
-            // ========== CODE TO FETCH REVIEWS IMPLEMENTED HERE ==========
+            // Fetch all reviews for the spot
             List<Review> reviews = ReviewDAO.getReviewsBySpotId(spotId);
 
+            // ========== CHECK IF CURRENT USER HAS ALREADY REVIEWED ==========
+            boolean userHasReviewed = false;
+            HttpSession session = request.getSession(false); // Get session without creating a new one
+            if (session != null && session.getAttribute("userId") != null) {
+                int userId = (Integer) session.getAttribute("userId");
+                userHasReviewed = ReviewDAO.hasUserReviewed(userId, spotId);
+            }
+            
             if (spot != null) {
                 // Set all necessary data as request attributes
                 request.setAttribute("spot", spot);
                 request.setAttribute("menuItems", menuItems);
-                request.setAttribute("reviews", reviews); // Pass the reviews to the JSP
+                request.setAttribute("reviews", reviews);
+                request.setAttribute("userHasReviewed", userHasReviewed); // Pass the flag to the JSP
                 
                 // Forward to the JSP page
                 request.getRequestDispatcher("menu.jsp").forward(request, response);

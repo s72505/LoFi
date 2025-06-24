@@ -12,8 +12,6 @@ public final class ReviewDAO {
     /**
      * Fetches all reviews for a specific food spot, joining with the users table
      * to get the reviewer's name.
-     * @param spotId The ID of the food spot.
-     * @return A list of Review objects.
      */
     public static List<Review> getReviewsBySpotId(int spotId) throws SQLException {
         String sql = "SELECT r.*, u.name FROM reviews r JOIN users u ON r.user_id = u.user_id WHERE r.spot_id = ? ORDER BY r.created_at DESC";
@@ -31,7 +29,7 @@ public final class ReviewDAO {
                     review.setRating(rs.getInt("rating"));
                     review.setComment(rs.getString("comment"));
                     review.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-                    review.setUserName(rs.getString("name")); // Set the joined user name
+                    review.setUserName(rs.getString("name"));
                     reviews.add(review);
                 }
             }
@@ -40,12 +38,9 @@ public final class ReviewDAO {
     }
 
     /**
-     * Adds a new review to the database.
-     * @param review The Review object to be added.
+     * Adds a new review to the database. Uses INSERT IGNORE to prevent duplicates.
      */
     public static void addReview(Review review) throws SQLException {
-        // A user can only review a spot once, so we use INSERT IGNORE
-        // or you could use REPLACE INTO depending on desired behavior.
         String sql = "INSERT IGNORE INTO reviews (spot_id, user_id, rating, comment, created_at) VALUES (?, ?, ?, ?, ?)";
         try (Connection c = DBHelper.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -57,7 +52,10 @@ public final class ReviewDAO {
             ps.executeUpdate();
         }
     }
-        // ========== NEW METHOD TO CALCULATE THE AVERAGE RATING ==========
+
+    /**
+     * Calculates the average rating for a specific food spot.
+     */
     public static double calculateAverageRating(int spotId) throws SQLException {
         String sql = "SELECT AVG(rating) as avg_rating FROM reviews WHERE spot_id = ?";
         try (Connection c = DBHelper.getConnection();
@@ -66,11 +64,56 @@ public final class ReviewDAO {
             ps.setInt(1, spotId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    // The result of AVG might be null if there are no reviews, so we default to 0.0
                     return rs.getDouble("avg_rating");
                 }
             }
         }
         return 0.0; // Return 0 if no reviews are found
+    }
+
+    // ========== NEW METHODS FOR EDIT/DELETE FUNCTIONALITY ==========
+
+    /**
+     * Deletes a review, but only if the provided userId matches the one who created it.
+     */
+    public static void deleteReview(int reviewId, int userId) throws SQLException {
+        String sql = "DELETE FROM reviews WHERE review_id = ? AND user_id = ?";
+        try (Connection c = DBHelper.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, reviewId);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        }
+    }
+
+    /**
+     * Updates an existing review, but only if the provided userId matches the one who created it.
+     */
+    public static void updateReview(int reviewId, int userId, int rating, String comment) throws SQLException {
+        String sql = "UPDATE reviews SET rating = ?, comment = ?, created_at = NOW() WHERE review_id = ? AND user_id = ?";
+        try (Connection c = DBHelper.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, rating);
+            ps.setString(2, comment);
+            ps.setInt(3, reviewId);
+            ps.setInt(4, userId);
+            ps.executeUpdate();
+        }
+    }
+
+    /**
+     * Checks if a user has already reviewed a specific spot.
+     * @return true if a review exists, false otherwise.
+     */
+    public static boolean hasUserReviewed(int userId, int spotId) throws SQLException {
+        String sql = "SELECT 1 FROM reviews WHERE user_id = ? AND spot_id = ?";
+        try (Connection c = DBHelper.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, spotId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
     }
 }

@@ -48,7 +48,7 @@
             <div class="container pb-4">
                 <h1 class="display-4 fw-bold">${spot.restaurantName}</h1>
                 <p class="lead"><i class="fas fa-map-marker-alt fa-fw me-2"></i>${spot.address}</p>
-                <p class="fs-5"><i class="fas fa-star fa-fw me-2 text-warning"></i>${spot.rating} / 5.0</p>
+                <p class="fs-5"><i class="fas fa-star fa-fw me-2 text-warning"></i>${String.format("%.1f", spot.rating)} / 5.0</p>
             </div>
         </div>
 
@@ -77,17 +77,12 @@
              </div>
         </div>
         
-        <%-- ================================================= --%>
-        <%-- ========== NEW REVIEW SECTION STARTS HERE ========== --%>
-        <%-- ================================================= --%>
         <div class="container py-4">
              <h2 class="text-center text-white mb-4">Reviews & Ratings</h2>
              
-             <c:if test="${sessionScope.role eq 'customer'}">
+             <c:if test="${sessionScope.role eq 'customer' and not userHasReviewed}">
                  <div class="card shadow-sm mb-4">
-                     <div class="card-header bg-light">
-                         <h5 class="mb-0">Leave a Review</h5>
-                     </div>
+                     <div class="card-header bg-light"><h5 class="mb-0">Leave a Review</h5></div>
                      <div class="card-body">
                          <form action="AddReviewServlet" method="post">
                              <input type="hidden" name="spotId" value="${spot.spotId}">
@@ -116,12 +111,51 @@
                      <c:forEach var="review" items="${reviews}">
                          <div class="card shadow-sm mb-3">
                              <div class="card-body">
-                                 <h6 class="card-title mb-1">${review.userName}</h6>
+                                 <div class="d-flex justify-content-between">
+                                     <h6 class="card-title mb-1">${review.userName}</h6>
+                                     
+                                     <%-- ========== EDIT AND DELETE CONTROLS ========== --%>
+                                     <c:if test="${sessionScope.userId eq review.userId}">
+                                         <div>
+                                             <button onclick="toggleEditForm(${review.reviewId})" class="btn btn-sm btn-outline-secondary">Edit</button>
+                                             <form action="ReviewActionServlet" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this review?');">
+                                                 <input type="hidden" name="action" value="delete">
+                                                 <input type="hidden" name="reviewId" value="${review.reviewId}">
+                                                 <input type="hidden" name="spotId" value="${spot.spotId}">
+                                                 <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                             </form>
+                                         </div>
+                                     </c:if>
+                                 </div>
                                  <p class="card-subtitle mb-2 text-warning">
                                      <c:forEach begin="1" end="${review.rating}">★</c:forEach><c:forEach begin="${review.rating + 1}" end="5">☆</c:forEach>
                                  </p>
                                  <p class="card-text">${review.comment}</p>
                                  <small class="text-muted">Reviewed on: ${review.createdAt}</small>
+
+                                 <div id="edit-form-${review.reviewId}" style="display: none;" class="mt-3 pt-3 border-top">
+                                     <form action="ReviewActionServlet" method="post">
+                                         <input type="hidden" name="action" value="edit">
+                                         <input type="hidden" name="reviewId" value="${review.reviewId}">
+                                         <input type="hidden" name="spotId" value="${spot.spotId}">
+                                         <div class="mb-3">
+                                             <label class="form-label">Update Your Rating</label>
+                                             <select name="rating" class="form-select" required>
+                                                 <option value="5" ${review.rating == 5 ? 'selected' : ''}>★★★★★ (Excellent)</option>
+                                                 <option value="4" ${review.rating == 4 ? 'selected' : ''}>★★★★☆ (Good)</option>
+                                                 <option value="3" ${review.rating == 3 ? 'selected' : ''}>★★★☆☆ (Average)</option>
+                                                 <option value="2" ${review.rating == 2 ? 'selected' : ''}>★★☆☆☆ (Poor)</option>
+                                                 <option value="1" ${review.rating == 1 ? 'selected' : ''}>★☆☆☆☆ (Terrible)</option>
+                                             </select>
+                                         </div>
+                                         <div class="mb-3">
+                                             <label class="form-label">Update Your Comment</label>
+                                             <textarea name="comment" rows="3" class="form-control" required>${review.comment}</textarea>
+                                         </div>
+                                         <button type="submit" class="btn btn-primary btn-sm">Update Review</button>
+                                         <button type="button" onclick="toggleEditForm(${review.reviewId})" class="btn btn-secondary btn-sm">Cancel</button>
+                                     </form>
+                                 </div>
                              </div>
                          </div>
                      </c:forEach>
@@ -134,8 +168,21 @@
     </main>
 
     <footer class="text-center text-white-50 py-3 mt-auto">
-        © 2025 LoFi · Contact: <a href="mailto:support@lofi.my" class="text-white-50">support@lofi.my</a>
+        © 2025 LoFi · <a href="mailto:support@lofi.my" class="text-white-50">support@lofi.my</a>
     </footer>
 </div>
+
+<%-- JavaScript to show/hide the edit forms --%>
+<script>
+    function toggleEditForm(reviewId) {
+        var form = document.getElementById('edit-form-' + reviewId);
+        if (form.style.display === 'none') {
+            form.style.display = 'block';
+        } else {
+            form.style.display = 'none';
+        }
+    }
+</script>
+
 </body>
 </html>

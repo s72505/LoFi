@@ -64,6 +64,10 @@
         <servlet-name>AddReviewServlet</servlet-name>
         <servlet-class>com.lofi.servlet.AddReviewServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ReviewActionServlet</servlet-name>
+        <servlet-class>com.lofi.servlet.ReviewActionServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Login</servlet-name>
         <url-pattern>/Login</url-pattern>
@@ -127,6 +131,10 @@
     <servlet-mapping>
         <servlet-name>AddReviewServlet</servlet-name>
         <url-pattern>/AddReviewServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReviewActionServlet</servlet-name>
+        <url-pattern>/ReviewActionServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
