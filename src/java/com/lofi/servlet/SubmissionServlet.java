@@ -3,6 +3,7 @@ package com.lofi.servlet;
 import com.lofi.dao.AdminDAO;
 import com.lofi.model.FoodSpotApproval;
 import com.lofi.model.MenuApproval;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -27,11 +28,13 @@ public class SubmissionServlet extends HttpServlet {
             response.sendRedirect("login.jsp?err=unauthorized");
             return;
         }
+
         String action = request.getParameter("action");
         if (action == null) {
             response.sendRedirect("vendorDashboard.jsp");
             return;
         }
+
         switch (action) {
             case "set_spot_details":
                 handleSetSpotDetails(request, session);
@@ -89,23 +92,31 @@ public class SubmissionServlet extends HttpServlet {
     private void handleFinalSubmit(HttpServletRequest request, HttpServletResponse response, HttpSession session, int userId) throws ServletException, IOException {
         FoodSpotApproval spot = (FoodSpotApproval) session.getAttribute("submissionSpot");
         List<MenuApproval> menus = (List<MenuApproval>) session.getAttribute("submissionMenus");
+
         if (spot == null || menus == null || menus.isEmpty()) {
             request.setAttribute("err", "Incomplete submission. Please add foodspot details and at least one menu item.");
             request.getRequestDispatcher("newSubmission.jsp").forward(request, response);
-            return;
+            return; // Added return for safety
         }
+
         spot.setUser_id(userId);
         spot.setSubmitted_time(LocalDateTime.now());
+        
         try {
             AdminDAO.createSubmission(spot, menus);
+
             session.removeAttribute("submissionSpot");
             session.removeAttribute("submissionMenus");
+
             request.setAttribute("message", "Submission successful! Your request is now pending admin approval.");
             request.getRequestDispatcher("submissionResult.jsp").forward(request, response);
+            return; // ========== DEFENSIVE RETURN ADDED ==========
+
         } catch (SQLException e) {
             e.printStackTrace(); 
             request.setAttribute("err", "A database error occurred: " + e.getMessage());
             request.getRequestDispatcher("newSubmission.jsp").forward(request, response);
+            return; // ========== DEFENSIVE RETURN ADDED ==========
         }
     }
 }
