@@ -48,6 +48,10 @@
         <servlet-name>VendorDashboardServlet</servlet-name>
         <servlet-class>com.lofi.servlet.VendorDashboardServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SubmitFoodSpotServlet</servlet-name>
+        <servlet-class>com.lofi.servlet.SubmitFoodSpotServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Login</servlet-name>
         <url-pattern>/Login</url-pattern>
@@ -95,6 +99,10 @@
     <servlet-mapping>
         <servlet-name>VendorDashboardServlet</servlet-name>
         <url-pattern>/VendorDashboardServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SubmitFoodSpotServlet</servlet-name>
+        <url-pattern>/SubmitFoodSpotServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

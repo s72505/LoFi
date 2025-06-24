@@ -222,4 +222,26 @@ public final class AdminDAO {
             c.commit();
         }
     }
+    
+    // In AdminDAO.java or a new DAO file
+    public static void createFoodSpotSubmission(FoodSpotApproval submission) throws SQLException {
+        String sql = "INSERT INTO food_spot_approval (user_id, restaurant_name, address, Maps_url, photo_url, open_hours, closed_hours, halal_flag, working_days, submitted_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection c = DBHelper.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setInt(1, submission.getUser_id());
+            ps.setString(2, submission.getRestaurant_name());
+            ps.setString(3, submission.getAddress());
+            ps.setString(4, submission.getGoogle_maps_url());
+            ps.setString(5, submission.getPhoto_url());
+            ps.setString(6, submission.getOpen_hours());
+            ps.setString(7, submission.getClosed_hours());
+            ps.setBoolean(8, submission.getHalal_flag());
+            ps.setString(9, submission.getWorking_days());
+            ps.setTimestamp(10, java.sql.Timestamp.valueOf(submission.getSubmitted_time()));
+
+            ps.executeUpdate();
+        }
+    }
+
 }
