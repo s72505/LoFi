@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 public class FoodSpotApproval implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    // --- table columns ---
+    // --- All fields ---
     private int     request_id;
     private int     user_id;
     private String  restaurant_name;
@@ -20,14 +20,11 @@ public class FoodSpotApproval implements Serializable {
     private LocalDateTime submitted_time;
     private String  status;
     private String  rejection_reason;
-
-    // --- joined from users ---
     private String  name;
     private String  phone;
 
     // --- Constructors ---
-    public FoodSpotApproval() {
-    }
+    public FoodSpotApproval() {} // This is the required empty constructor
 
     public FoodSpotApproval(int request_id, int user_id, String restaurant_name,
                             String name, String phone, LocalDateTime submitted_time) {
@@ -64,11 +61,11 @@ public class FoodSpotApproval implements Serializable {
     public void setRestaurant_name(String v) { restaurant_name = v; }
     public String getAddress() { return address; }
     public void setAddress(String v) { address = v; }
-
+    
     // ========== CORRECTED GETTER AND SETTER ==========
     public String getMaps_url() { return Maps_url; }
     public void setMaps_url(String v) { this.Maps_url = v; }
-
+    
     public String getPhoto_url() { return photo_url; }
     public void setPhoto_url(String v) { photo_url = v; }
     public String getOpen_hours() { return open_hours; }
