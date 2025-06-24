@@ -8,7 +8,6 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
         <style>
-          /* ---------- existing styles – unchanged ---------- */
           .cuisine-icon{
             width:56px;height:56px;
             object-fit:contain;
@@ -24,27 +23,25 @@
         </style>
     </head>
 
-    <!-- SAME flex/overflow recipe that favourites.jsp uses -->
     <body class="vh-100 d-flex flex-column h-100 overflow-auto" style="background:#33455a">
 
-      <!-- blurred BG + tint -->
         <div class="position-fixed top-0 start-0 w-100 h-100"
              style="background:url('img/loginBackground.jpg') center/cover no-repeat fixed;
                     filter:blur(5px);z-index:0;"></div>
         <div class="position-fixed top-0 start-0 w-100 h-100"
              style="background:rgba(0,0,0,.55);z-index:0;"></div>
 
-        <!-- ========= wrapper ========= -->
         <div class="d-flex flex-column h-100" style="z-index:1;position:relative;">
 
-          <!-- ===== header ===== -->
             <header class="container-fluid py-2">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
                         <img src="img/LoFi.png" alt="LoFi" class="rounded-circle me-2" style="height:48px;">
                         <span class="h4 mb-0 text-white">Local Food Finder</span>
                     </div>
-                    <form action="Logout" method="post" class="m-0">
+                    
+                    <%-- ========== THIS IS THE CORRECTED LINE ========== --%>
+                    <form action="Logout" method="get" class="m-0">
                         <button class="btn btn-sm btn-outline-light">
                             <i class="fa fa-sign-out-alt me-1"></i> Logout
                         </button>
@@ -52,14 +49,11 @@
                 </div>
             </header>
 
-            <!-- ===== cuisine cards ===== -->
-            <!-- Note the added pt-3 just like favourites.jsp -->
             <main class="container my-auto flex-grow-1 overflow-auto pt-3">
                 <h2 class="text-center text-white mb-4">What are you craving?</h2>
 
                 <div class="row row-cols-1 row-cols-md-3 g-4">
                 <%
-                  /*  left column = caption, right column = SVG file-name  */
                   String[][] preset = {
                     {"Hot Food","hotFood"},
                     {"Noodles and Pasta","noodleAndPasta"},
@@ -90,7 +84,6 @@
                 </div>
             </main>
 
-            <!-- ===== footer ===== -->
             <footer class="text-center text-white-50 py-3 mt-auto">
                 © 2025 LoFi · Contact:
                 <a href="mailto:support@lofi.my" class="text-white-50">support@lofi.my</a>

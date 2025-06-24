@@ -1,6 +1,7 @@
 package com.lofi.dao;
 
 import com.lofi.model.FoodSpot;
+import com.lofi.model.MenuItem;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,6 +105,34 @@ public final class FoodSpotDAO {
         }
     }
 
+    // ========== NEW METHOD TO FETCH MENU ITEMS ==========
+    public static List<MenuItem> listMenuItemsBySpotId(int spotId) throws SQLException {
+        String sql = "SELECT * FROM menu_items WHERE spot_id = ? ORDER BY dish_name";
+        List<MenuItem> menuItems = new ArrayList<>();
+
+        try (Connection c = DBHelper.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            
+            ps.setInt(1, spotId);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    MenuItem item = new MenuItem();
+                    item.setItem_id(rs.getInt("item_id"));
+                    item.setSpot_id(rs.getInt("spot_id"));
+                    item.setDish_name(rs.getString("dish_name"));
+                    item.setPrice(rs.getDouble("price"));
+                    item.setDescription(rs.getString("description"));
+                    item.setCuisine_type(rs.getString("cuisine_type"));
+                    item.setImage_url(rs.getString("image_url"));
+                    menuItems.add(item);
+                }
+            }
+        }
+        return menuItems;
+    }
+    // ===============================================
+    
     private static FoodSpot map(ResultSet r) throws SQLException {
         FoodSpot f = new FoodSpot();
         f.setSpotId(r.getInt("spot_id"));

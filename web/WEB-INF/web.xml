@@ -56,6 +56,10 @@
         <servlet-name>SubmissionServlet</servlet-name>
         <servlet-class>com.lofi.servlet.SubmissionServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>MenuServlet</servlet-name>
+        <servlet-class>com.lofi.servlet.MenuServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Login</servlet-name>
         <url-pattern>/Login</url-pattern>
@@ -111,6 +115,10 @@
     <servlet-mapping>
         <servlet-name>SubmissionServlet</servlet-name>
         <url-pattern>/SubmissionServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MenuServlet</servlet-name>
+        <url-pattern>/MenuServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
