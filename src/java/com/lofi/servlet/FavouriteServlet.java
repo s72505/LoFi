@@ -4,7 +4,7 @@ import com.lofi.dao.FavouriteDAO;
 import com.lofi.model.FoodSpot;
 
 import javax.servlet.ServletException;
-//import javax.servlet.annotation.WebServlet;
+// import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -24,43 +24,53 @@ public class FavouriteServlet extends HttpServlet {
 
     private static final Logger LOG = Logger.getLogger(FavouriteServlet.class.getName());
 
-    /* ----------  GET : show list  ---------- */
+    /* ---------- GET: Display the user's list of favourites ---------- */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
+        // Retrieve the current user's ID from the session
         Integer userId = (Integer) req.getSession().getAttribute("userId");
-        if (userId == null) {                       // not logged in → back to login
+
+        // Redirect to login if not authenticated
+        if (userId == null) {
             res.sendRedirect("login.jsp");
             return;
         }
 
         List<FoodSpot> list;
         try {
+            // Fetch all food spots favourited by the user
             list = FavouriteDAO.listByUser(userId);
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, "Unable to load user favourites", ex);
-            throw new ServletException(ex);        // will be handled by error-page
+            throw new ServletException(ex); // Forward to error page if DB fails
         }
 
+        // Set favourites list (empty if null) into request scope and forward to view
         req.setAttribute("favs", list == null ? Collections.emptyList() : list);
         req.getRequestDispatcher("favourites.jsp").forward(req, res);
     }
 
-    /* ----------  POST : add / delete  ---------- */
+    /* ---------- POST: Add or remove a food spot from favourites ---------- */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
+        // Get the userId from the session
         Integer userId = (Integer) req.getSession().getAttribute("userId");
+
+        // Redirect to login if not authenticated
         if (userId == null) {
             res.sendRedirect("login.jsp");
             return;
         }
 
-        String action = req.getParameter("action");       // "add" | "del"
-        String sid     = req.getParameter("spotId");      // food-spot id
+        // Read form parameters
+        String action = req.getParameter("action");   // "add" or "del"
+        String sid    = req.getParameter("spotId");   // spot ID to be added/removed
 
+        // Validate inputs
         if (action == null || sid == null) {
             res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
             return;
@@ -68,6 +78,7 @@ public class FavouriteServlet extends HttpServlet {
 
         int spotId;
         try {
+            // Parse spotId into integer
             spotId = Integer.parseInt(sid);
         } catch (NumberFormatException e) {
             res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid spotId");
@@ -75,17 +86,18 @@ public class FavouriteServlet extends HttpServlet {
         }
 
         try {
+            // Perform the action
             switch (action) {
-                case "add" -> FavouriteDAO.add(userId, spotId);
-                case "del" -> FavouriteDAO.remove(userId, spotId);
-                default    -> res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown action");
+                case "add" -> FavouriteDAO.add(userId, spotId);    // Add to favourites
+                case "del" -> FavouriteDAO.remove(userId, spotId); // Remove from favourites
+                default     -> res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown action");
             }
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, "Favourite DB operation failed", ex);
             throw new ServletException(ex);
         }
 
-        /* back to the list page (PRG pattern) */
+        // Post-Redirect-Get pattern: redirect back to servlet after POST
         res.sendRedirect(req.getContextPath() + "/FavouriteServlet");
     }
 }

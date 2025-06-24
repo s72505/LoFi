@@ -4,6 +4,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- 
+        Page metadata and external stylesheets 
+        - Bootstrap for layout 
+        - Font Awesome for icons 
+        - Custom styles for theme look 
+    -->
     <meta charset="UTF-8">
     <title>LoFi – Home</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,14 +22,27 @@
 
 <body class="vh-100 d-flex flex-column h-100" style="background:rgba(0,0,0,.5)">
 
+<!-- 
+    Background layers:
+    - First: blurred background image
+    - Second: semi-transparent dark overlay
+-->
 <div class="position-fixed top-0 start-0 w-100 h-100"
      style="background:url('img/loginBackground.jpg') center/cover no-repeat fixed;
             filter:blur(5px);z-index:0;"></div>
 <div class="position-fixed top-0 start-0 w-100 h-100"
      style="background:rgba(0,0,0,.55);z-index:0;"></div>
 
+<!-- 
+    Main wrapper for all content, positioned above background layers 
+-->
 <div class="d-flex flex-column h-100" style="z-index:1;position:relative;">
 
+    <!-- 
+        Header: 
+        - LoFi logo and name on left 
+        - Logout button on right
+    -->
     <header class="container-fluid py-2">
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
@@ -38,9 +57,16 @@
         </div>
     </header>
 
+    <!-- 
+        Main content section 
+        - Dynamically shows options based on user role
+    -->
     <main class="container my-auto flex-grow-1 overflow-auto pt-5">
         <div class="row g-4 justify-content-center">
 
+            <!-- 
+                Card 1: Search food spots 
+            -->
             <div class="col-10 col-md-4">
                 <div class="card text-center">
                     <div class="card-body">
@@ -50,6 +76,9 @@
                 </div>
             </div>
 
+            <!-- 
+                Card 2: Manage profile 
+            -->
             <div class="col-10 col-md-4">
                 <div class="card shadow text-center">
                     <div class="card-body">
@@ -59,8 +88,10 @@
                 </div>
             </div>
 
+            <!-- 
+                Card 3: My Favourites (visible only to 'customer' role)
+            -->
             <%-- ==================== CHANGE IMPLEMENTED HERE ==================== --%>
-            <%-- This entire card is now only visible if the user's role is 'customer' --%>
             <c:if test="${sessionScope.role == 'customer'}">
                 <div class="col-10 col-md-4">
                     <div class="card shadow text-center">
@@ -74,6 +105,9 @@
             </c:if>
             <%-- ================================================================= --%>
 
+            <!-- 
+                Card 4: Vendor dashboard (visible only to 'vendor' role)
+            -->
             <c:if test="${sessionScope.role == 'vendor'}">
                 <div class="col-10 col-md-4">
                     <div class="card shadow text-center bg-warning-subtle">
@@ -85,6 +119,9 @@
                 </div>
             </c:if>
 
+            <!-- 
+                Card 5: Admin dashboard (visible only to 'admin' role)
+            -->
             <c:if test="${sessionScope.role == 'admin'}">
                 <div class="col-10 col-md-4">
                     <div class="card shadow text-center bg-info-subtle">
@@ -95,9 +132,13 @@
                     </div>
                 </div>
             </c:if>
-
         </div>
 
+        <!-- 
+            Section: Customer quick favourite preview 
+            - Only shown to 'customer' role 
+            - Shows cards linking to individual MenuServlet views
+        -->
         <c:if test="${sessionScope.role == 'customer'}">
             <hr class="text-white my-4">
             <h4 class="text-white text-center mb-3">Your Favourite Spots</h4>
@@ -112,6 +153,10 @@
                         </div>
                     </div>
                 </c:forEach>
+
+                <!-- 
+                    Fallback: if no favourites in request scope
+                -->
                 <c:if test="${empty quickFavs}">
                     <p class="text-center text-white-50">No favourites yet.</p>
                 </c:if>
@@ -119,6 +164,9 @@
         </c:if>
     </main>
 
+    <!-- 
+        Footer section with contact info
+    -->
     <footer class="text-center text-white-50 py-3">
         © 2025 LoFi&nbsp;· Contact:
         <a href="mailto:support@lofi.my" class="text-white-50">support@lofi.my</a>

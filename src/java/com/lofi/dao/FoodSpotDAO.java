@@ -9,16 +9,16 @@ import java.util.List;
 public final class FoodSpotDAO {
 
     /**
-     * Updated to filter by cuisine type.
+     * Filters food spots based on multiple criteria including cuisine, halal status, price range, and rating.
      */
-    public static List<FoodSpot> findWithFilters(String cuisine, // New parameter
+    public static List<FoodSpot> findWithFilters(String cuisine,
                                                  Boolean halal,
                                                  double minPrice,
                                                  double maxPrice,
                                                  double minRating,
                                                  String sort) throws SQLException {
-        
-        // ========== SQL QUERY UPDATED TO INCLUDE CUISINE FILTER ==========
+
+        // Construct SQL query with optional filters for halal and cuisine
         StringBuilder sql = new StringBuilder("""
             SELECT fs.*, mi.cuisine_type
               FROM food_spots fs
@@ -31,6 +31,7 @@ public final class FoodSpotDAO {
                AND fs.rating    >= ?
             """);
 
+        // Append sorting condition based on user input
         switch (sort) {
             case "price_asc": sql.append(" ORDER BY MIN(mi.price) ASC"); break;
             case "price_desc": sql.append(" ORDER BY MAX(mi.price) DESC"); break;
@@ -42,21 +43,21 @@ public final class FoodSpotDAO {
              PreparedStatement ps = c.prepareStatement(sql.toString())) {
 
             int idx = 1;
-            // Halal filter
+
+            // Bind halal filter
             ps.setObject(idx++, halal);
             ps.setObject(idx++, halal);
-            
-            // ========== NEW CUISINE PARAMETER BINDING ==========
+
+            // Bind cuisine filter
             ps.setString(idx++, cuisine);
             ps.setString(idx++, cuisine);
-            
-            // Price range
+
+            // Bind price and rating constraints
             ps.setDouble(idx++, minPrice);
             ps.setDouble(idx++, maxPrice);
-            
-            // Rating
             ps.setDouble(idx++, minRating);
 
+            // Execute query and build result list
             try (ResultSet rs = ps.executeQuery()) {
                 List<FoodSpot> list = new ArrayList<>();
                 while (rs.next()) {
@@ -66,10 +67,10 @@ public final class FoodSpotDAO {
             }
         }
     }
-    
-    // ... (The rest of your FoodSpotDAO.java file remains unchanged)
-    
-    /* ---------- SINGLE RECORD ---------- */
+
+    /**
+     * Finds a single food spot by its unique ID.
+     */
     public static FoodSpot find(int id) throws SQLException {
         try (Connection c = DBHelper.getConnection();
              PreparedStatement ps = c.prepareStatement("SELECT * FROM food_spots WHERE spot_id=?")) {
@@ -79,7 +80,9 @@ public final class FoodSpotDAO {
         }
     }
 
-    /* ---------- INSERT ---------- */
+    /**
+     * Inserts a new food spot into the database and returns the generated ID.
+     */
     public static int insert(FoodSpot f) throws SQLException {
         String sql = """
             INSERT INTO food_spots (
@@ -100,21 +103,25 @@ public final class FoodSpotDAO {
             ps.setString(8, f.getClosedHours());
             ps.setString(9, f.getWorkingDays());
             ps.executeUpdate();
+
+            // Return generated ID
             ResultSet k = ps.getGeneratedKeys();
             return k.next() ? k.getInt(1) : 0;
         }
     }
 
-    // ========== NEW METHOD TO FETCH MENU ITEMS ==========
+    /**
+     * Retrieves all menu items for a given food spot ID.
+     */
     public static List<MenuItem> listMenuItemsBySpotId(int spotId) throws SQLException {
         String sql = "SELECT * FROM menu_items WHERE spot_id = ? ORDER BY dish_name";
         List<MenuItem> menuItems = new ArrayList<>();
 
         try (Connection c = DBHelper.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
-            
+
             ps.setInt(1, spotId);
-            
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     MenuItem item = new MenuItem();
@@ -131,20 +138,24 @@ public final class FoodSpotDAO {
         }
         return menuItems;
     }
-    // ===============================================
-    
-        // ========== NEW METHOD TO UPDATE A SPOT'S RATING ==========
+
+    /**
+     * Updates the average rating for a specific food spot.
+     */
     public static void updateRating(int spotId, double newRating) throws SQLException {
         String sql = "UPDATE food_spots SET rating = ? WHERE spot_id = ?";
         try (Connection c = DBHelper.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
-            
+
             ps.setDouble(1, newRating);
             ps.setInt(2, spotId);
             ps.executeUpdate();
         }
     }
-    
+
+    /**
+     * Helper method to map a ResultSet row into a FoodSpot object.
+     */
     private static FoodSpot map(ResultSet r) throws SQLException {
         FoodSpot f = new FoodSpot();
         f.setSpotId(r.getInt("spot_id"));
@@ -160,5 +171,6 @@ public final class FoodSpotDAO {
         return f;
     }
 
+    // Private constructor to prevent instantiation of utility class
     private FoodSpotDAO() {}
 }

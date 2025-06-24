@@ -1,6 +1,10 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+<!-- 
+    Guard clause: Only allows access to users with 'customer' role
+    Redirects others back to home page
+-->
 <c:if test="${sessionScope.role ne 'customer'}">
     <c:redirect url="home.jsp"/>
 </c:if>
@@ -8,6 +12,12 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <!-- 
+            Page metadata and external stylesheets 
+            - Bootstrap for layout 
+            - Font Awesome for icons 
+            - Custom styles for UI look and feel 
+        -->
         <meta charset="UTF-8">
         <title>LoFi – My Favourites</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,14 +33,28 @@
     </head>
     <body class="vh-100 d-flex flex-column h-100 overflow-auto">
 
+        <!-- 
+            Background layers: 
+            - Blurred image and semi-transparent dark overlay 
+        -->
         <div class="position-fixed top-0 start-0 w-100 h-100"
              style="background:url('img/loginBackground.jpg') center/cover no-repeat fixed;
                     filter:blur(5px); z-index:0;"></div>
         <div class="position-fixed top-0 start-0 w-100 h-100"
              style="background:rgba(0,0,0,.55); z-index:0;"></div>
 
+        <!-- 
+            Main content wrapper with relative positioning above background 
+        -->
         <div class="d-flex flex-column h-100" style="z-index:1; position:relative;">
 
+            <!-- 
+                Header section with:
+                - Back to home button
+                - LoFi logo
+                - App name
+                - Logout button
+            -->
             <header class="container-fluid py-1">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
@@ -48,20 +72,35 @@
                 </div>
             </header>
 
+            <!-- 
+                Main section displaying user's favorite food spots
+            -->
             <main class="container my-4 flex-grow-1 overflow-auto pt-3">
                 <h3 class="text-white text-center mb-4">My Favourite Spots</h3>
 
+                <!-- 
+                    Condition: If no favorites exist, show placeholder
+                    Otherwise, display each favorite in card layout
+                -->
                 <c:choose>
                     <c:when test="${empty favs}">
                         <p class="text-center text-white-50">You have no favourites yet.</p>
                     </c:when>
 
                     <c:otherwise>
+                        <!-- 
+                            Responsive grid to display each favorite spot 
+                            using Bootstrap columns and card layout
+                        -->
                         <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
                             <c:forEach var="f" items="${favs}">
                                 <div class="col">
                                     <div class="card h-100 position-relative">
 
+                                        <!-- 
+                                            Form to remove favorite spot
+                                            - Sends POST to FavouriteServlet with action=del
+                                        -->
                                         <form action="${pageContext.request.contextPath}/FavouriteServlet"
                                               method="post" class="unfav-btn">
                                             <input type="hidden" name="action" value="del">
@@ -71,8 +110,18 @@
                                             </button>
                                         </form>
 
+                                        <!-- 
+                                            Display food spot photo
+                                            - Uses card-img-top style with fixed height
+                                        -->
                                         <img src="${f.photoUrl}" class="card-img-top fav-img" alt="${f.restaurantName}">
 
+                                        <!-- 
+                                            Card body:
+                                            - Restaurant name
+                                            - Rating (star icon)
+                                            - Clickable link via stretched-link (redirects to MenuServlet)
+                                        -->
                                         <div class="card-body">
                                             <h6 class="card-title mb-1">${f.restaurantName}</h6>
                                             <span class="text-warning">
@@ -89,6 +138,9 @@
                 </c:choose>
             </main>
 
+            <!-- 
+                Footer section with contact email
+            -->
             <footer class="text-center text-white-50 py-3 mt-auto">
                 © 2025 LoFi · <a href="mailto:support@lofi.my" class="text-white-50">support@lofi.my</a>
             </footer>

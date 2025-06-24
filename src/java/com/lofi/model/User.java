@@ -4,28 +4,35 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * Represents a user in the system (can be customer, vendor, or admin).
+ */
 public class User {
-    private int    userId;     // user_id
-    private String name;       // name
-    private String email;      // email
-    private String phone;      // phone
-    private String pwHash;     // pw_hash
-    private String role;       // role  (customer | vendor | admin)
+    // === Fields ===
+    private int userId;         // user_id in the database
+    private String name;        // user's full name
+    private String email;       // user's email (used for login)
+    private String phone;       // user's phone number
+    private String pwHash;      // hashed password using SHA-256
+    private String role;        // user role: "customer", "vendor", or "admin"
 
-    /* --- constructors --- */
+    // === Constructors ===
+
+    // Default constructor (needed for frameworks like JDBC, Jackson, etc.)
     public User() {}
 
+    // Full constructor for initializing all fields
     public User(int userId, String name, String email,
                 String phone, String pwHash, String role) {
-        this.userId  = userId;
-        this.name    = name;
-        this.email   = email;
-        this.phone   = phone;
-        this.pwHash  = pwHash;
-        this.role    = role;
+        this.userId = userId;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.pwHash = pwHash;
+        this.role = role;
     }
 
-    /* ---------- getters / setters ---------- */
+    // === Getters and Setters ===
 
     public int getUserId() {
         return userId;
@@ -75,21 +82,33 @@ public class User {
         this.role = role;
     }
 
+    // === Utility Methods ===
 
-    /* ---------- utility ---------- */
+    /**
+     * Hashes a plain-text password using SHA-256.
+     * @param plain the plain password input
+     * @return hashed value as a hex string
+     */
     public static String sha256(String plain) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] bytes = md.digest(plain.getBytes(StandardCharsets.UTF_8));
+
+            // Convert byte array to hexadecimal string
             StringBuilder sb = new StringBuilder(bytes.length * 2);
             for (byte b : bytes) sb.append(String.format("%02x", b));
             return sb.toString();
         } catch (NoSuchAlgorithmException e) {
+            // Should never happen if Java supports SHA-256
             throw new IllegalStateException("SHA-256 not available", e);
         }
     }
 
-    /** Compare a plain password with the stored hash */
+    /**
+     * Compares a raw password input with the stored hash.
+     * @param plain plain-text password to validate
+     * @return true if match, false otherwise
+     */
     public boolean matchesPassword(String plain) {
         return pwHash != null && pwHash.equals(sha256(plain));
     }

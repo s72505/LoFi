@@ -7,11 +7,12 @@ import java.util.List;
 
 public final class ReviewDAO {
 
+    // Private constructor to prevent instantiation
     private ReviewDAO() {}
 
     /**
-     * Fetches all reviews for a specific food spot, joining with the users table
-     * to get the reviewer's name.
+     * Fetches all reviews for a specific food spot.
+     * Joins with the users table to retrieve the reviewer's name.
      */
     public static List<Review> getReviewsBySpotId(int spotId) throws SQLException {
         String sql = "SELECT r.*, u.name FROM reviews r JOIN users u ON r.user_id = u.user_id WHERE r.spot_id = ? ORDER BY r.created_at DESC";
@@ -22,6 +23,7 @@ public final class ReviewDAO {
             ps.setInt(1, spotId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
+                    // Construct Review object from each row
                     Review review = new Review();
                     review.setReviewId(rs.getInt("review_id"));
                     review.setSpotId(rs.getInt("spot_id"));
@@ -38,7 +40,8 @@ public final class ReviewDAO {
     }
 
     /**
-     * Adds a new review to the database. Uses INSERT IGNORE to prevent duplicates.
+     * Adds a new review into the database.
+     * Uses INSERT IGNORE to avoid duplicate primary keys (if applicable).
      */
     public static void addReview(Review review) throws SQLException {
         String sql = "INSERT IGNORE INTO reviews (spot_id, user_id, rating, comment, created_at) VALUES (?, ?, ?, ?, ?)";
@@ -54,13 +57,14 @@ public final class ReviewDAO {
     }
 
     /**
-     * Calculates the average rating for a specific food spot.
+     * Calculates the average rating of a food spot.
+     * Returns 0.0 if there are no reviews.
      */
     public static double calculateAverageRating(int spotId) throws SQLException {
         String sql = "SELECT AVG(rating) as avg_rating FROM reviews WHERE spot_id = ?";
         try (Connection c = DBHelper.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
-            
+
             ps.setInt(1, spotId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -68,13 +72,14 @@ public final class ReviewDAO {
                 }
             }
         }
-        return 0.0; // Return 0 if no reviews are found
+        return 0.0; // Default value if no rating found
     }
 
     // ========== NEW METHODS FOR EDIT/DELETE FUNCTIONALITY ==========
 
     /**
-     * Deletes a review, but only if the provided userId matches the one who created it.
+     * Deletes a review for a spot.
+     * Only the user who created the review can delete it.
      */
     public static void deleteReview(int reviewId, int userId) throws SQLException {
         String sql = "DELETE FROM reviews WHERE review_id = ? AND user_id = ?";
@@ -87,7 +92,9 @@ public final class ReviewDAO {
     }
 
     /**
-     * Updates an existing review, but only if the provided userId matches the one who created it.
+     * Updates a review's rating and comment.
+     * Only allowed if the user is the original reviewer.
+     * Updates the timestamp to NOW.
      */
     public static void updateReview(int reviewId, int userId, int rating, String comment) throws SQLException {
         String sql = "UPDATE reviews SET rating = ?, comment = ?, created_at = NOW() WHERE review_id = ? AND user_id = ?";
@@ -102,8 +109,8 @@ public final class ReviewDAO {
     }
 
     /**
-     * Checks if a user has already reviewed a specific spot.
-     * @return true if a review exists, false otherwise.
+     * Checks if the given user has already submitted a review for a spot.
+     * Useful for preventing multiple reviews per user per spot.
      */
     public static boolean hasUserReviewed(int userId, int spotId) throws SQLException {
         String sql = "SELECT 1 FROM reviews WHERE user_id = ? AND spot_id = ?";
@@ -112,7 +119,7 @@ public final class ReviewDAO {
             ps.setInt(1, userId);
             ps.setInt(2, spotId);
             try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
+                return rs.next(); // true if review exists
             }
         }
     }

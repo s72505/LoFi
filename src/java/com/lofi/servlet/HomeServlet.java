@@ -24,31 +24,34 @@ public class HomeServlet extends HttpServlet {
 
         // ----- customer: load favourites --------------------------------------------------
         if ("customer".equals(req.getSession().getAttribute("role"))) {
+            // Get user ID from session
             int uid = (int) req.getSession().getAttribute("userId");
 
             try {
-                // full list from DAO
+                // Retrieve full list of favourites from DAO
                 List<FoodSpot> favs = FavouriteDAO.listByUser(uid);
 
-                // randomise order, then keep at most 3
+                // Shuffle the list to randomize order
                 Collections.shuffle(favs);
+
+                // Select at most 3 favourites for quick-access display
                 List<FoodSpot> quickFavs = favs.stream()
                                                .limit(3)
                                                .collect(Collectors.toList());
 
-                // make the result(s) available to JSP
-                req.setAttribute("quickFavs", quickFavs);  // for the quick-access block
-                // If you still need the complete list somewhere else keep the next line,
-                // otherwise you can remove it:
-                req.setAttribute("favs", favs);
+                // Set attributes for use in JSP view
+                req.setAttribute("quickFavs", quickFavs);  // Quick-access preview cards
+                req.setAttribute("favs", favs);            // Full favourite list (optional)
 
             } catch (SQLException ex) {
+                // Log any SQL errors that occur
                 Logger.getLogger(HomeServlet.class.getName())
                       .log(Level.SEVERE, null, ex);
             }
         }
 
         // ----- forward to view ------------------------------------------------------------
+        // Forward the request to the home page view (home.jsp)
         req.getRequestDispatcher("home.jsp").forward(req, res);
     }
 }

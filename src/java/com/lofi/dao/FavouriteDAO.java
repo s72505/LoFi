@@ -8,6 +8,7 @@ import java.util.List;
 
 public final class FavouriteDAO {
 
+    // Adds a favourite spot for a user; uses INSERT IGNORE to prevent duplicates
     public static void add(int userId, int spotId) throws SQLException {
         String sql = "INSERT IGNORE INTO favourites(user_id, spot_id) VALUES (?, ?)";
         try (Connection c = DBHelper.getConnection();
@@ -18,6 +19,7 @@ public final class FavouriteDAO {
         }
     }
 
+    // Removes a favourite spot for a user
     public static void remove(int userId, int spotId) throws SQLException {
         String sql = "DELETE FROM favourites WHERE user_id = ? AND spot_id = ?";
         try (Connection c = DBHelper.getConnection();
@@ -28,16 +30,18 @@ public final class FavouriteDAO {
         }
     }
 
+    // Checks whether a given spot is already favourited by the user
     public static boolean exists(int userId, int spotId) throws SQLException {
         String sql = "SELECT 1 FROM favourites WHERE user_id = ? AND spot_id = ?";
         try (Connection c = DBHelper.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, userId);
             ps.setInt(2, spotId);
-            return ps.executeQuery().next();
+            return ps.executeQuery().next(); // true if a record exists
         }
     }
 
+    // Returns a list of all favourite food spots for a given user
     public static List<FoodSpot> listByUser(int userId) throws SQLException {
         String sql = """
             SELECT fs.*
@@ -68,5 +72,6 @@ public final class FavouriteDAO {
         }
     }
 
+    // Private constructor to prevent instantiation (utility class)
     private FavouriteDAO() {}
 }

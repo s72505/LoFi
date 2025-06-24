@@ -9,6 +9,7 @@ import java.util.List;
 public final class UserDAO {
 
     /* ---------- CREATE ---------- */
+    // Inserts a new user record into the database and returns the generated user_id
     public static int insert(User u) throws SQLException {
         String sql = """
             INSERT INTO users(name, email, phone, pw_hash, role)
@@ -30,6 +31,7 @@ public final class UserDAO {
     }
 
     /* ---------- READ ---------- */
+    // Finds a user by their user_id
     public static User findById(int id) throws SQLException {
         String sql = "SELECT * FROM users WHERE user_id = ?";
         try (Connection c = DBHelper.getConnection();
@@ -41,6 +43,7 @@ public final class UserDAO {
         }
     }
 
+    // Finds a user by their email address
     public static User findByEmail(String email) throws SQLException {
         String sql = "SELECT * FROM users WHERE email = ?";
         try (Connection c = DBHelper.getConnection();
@@ -52,6 +55,7 @@ public final class UserDAO {
         }
     }
 
+    // Returns a list of all users in the database
     public static List<User> listAll() throws SQLException {
         try (Connection c = DBHelper.getConnection();
              PreparedStatement ps = c.prepareStatement("SELECT * FROM users ORDER BY user_id");
@@ -64,6 +68,7 @@ public final class UserDAO {
     }
 
     /* ---------- UPDATE ---------- */
+    // Updates the name, phone, and role of an existing user
     public static void updateProfile(User u) throws SQLException {
         String sql = """
             UPDATE users
@@ -81,6 +86,7 @@ public final class UserDAO {
         }
     }
 
+    // Updates the password hash of a specific user
     public static void updatePassword(int userId, String newHash) throws SQLException {
         try (Connection c = DBHelper.getConnection();
              PreparedStatement ps = c.prepareStatement(
@@ -93,6 +99,7 @@ public final class UserDAO {
     }
 
     /* ---------- DELETE ---------- */
+    // Deletes a user from the database based on their user_id
     public static void delete(int userId) throws SQLException {
         try (Connection c = DBHelper.getConnection();
              PreparedStatement ps = c.prepareStatement("DELETE FROM users WHERE user_id = ?")) {
@@ -103,6 +110,7 @@ public final class UserDAO {
     }
 
     /* ---------- UTIL ---------- */
+    // Checks if a user with the given email already exists
     public static boolean emailExists(String email) throws SQLException {
         try (Connection c = DBHelper.getConnection();
              PreparedStatement ps = c.prepareStatement(
@@ -113,7 +121,7 @@ public final class UserDAO {
         }
     }
 
-    /* map a ResultSet row → POJO (no renaming) */
+    // Maps a result set row into a User object
     private static User map(ResultSet r) throws SQLException {
         User u = new User();
         u.setUserId (r.getInt   ("user_id"));
@@ -125,5 +133,6 @@ public final class UserDAO {
         return u;
     }
 
-    private UserDAO() {}   // utility class; no instances
+    // Private constructor to prevent instantiation (utility class)
+    private UserDAO() {}   
 }

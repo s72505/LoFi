@@ -1,7 +1,10 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<!-- Guard: admin only (same idea you use elsewhere) -->
+<!-- 
+    Access control guard:
+    - Redirects users who are not admins to the login page with an error message.
+-->
 <c:if test="${sessionScope.role ne 'admin'}">
     <c:redirect url="login.jsp?err=loginRequired"/>
 </c:if>
@@ -9,6 +12,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- 
+        Page metadata and stylesheets
+        - Responsive design setup
+        - Bootstrap and Font Awesome
+        - Custom styling for background and card elements
+    -->
     <meta charset="UTF-8">
     <title>LoFi – Admin Review</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,13 +36,26 @@
 
 <body class="vh-100 d-flex flex-column h-100 overflow-auto">
 
-<!-- blurred BG + tint -->
+<!-- 
+    Layered background effect:
+    - First div applies blurred image
+    - Second adds dark overlay
+-->
 <div class="position-fixed top-0 start-0 w-100 h-100 blur-bg"></div>
 <div class="position-fixed top-0 start-0 w-100 h-100" style="background:rgba(0,0,0,.55);z-index:0;"></div>
 
+<!-- 
+    Wrapper for the whole page layout
+    - Positioned above background
+-->
 <div class="d-flex flex-column h-100" style="z-index:1;position:relative;">
 
-    <!-- ===== header (same look as dashboard) ===== -->
+    <!-- 
+        Header bar with navigation and branding
+        - Back to dashboard link
+        - LoFi logo
+        - Logout button
+    -->
     <header class="container-fluid py-2">
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
@@ -51,25 +73,33 @@
         </div>
     </header>
 
-    <!-- ===== content ===== -->
+    <!-- 
+        Main content block:
+        - Contains card showing full submission details
+    -->
     <main class="container my-4 flex-grow-1 overflow-auto pt-3">
 
-        <!-- Card wrapper -->
+        <!-- Review card container -->
         <div class="card shadow-lg mx-auto" style="max-width:900px">
             <div class="card-body">
 
                 <h3 class="card-title mb-4 text-center">Submission #${sessionScope.requestID}</h3>
 
-                <!-- -------- Food-spot details -------- -->
+                <!-- 
+                    Section: Food Spot Details
+                    - Displays image, restaurant name, address, hours, etc.
+                -->
                 <h5 class="fw-semibold mb-3"><i class="fas fa-store me-1"></i> Food Spot Details</h5>
 
                 <div class="row g-4">
+                    <!-- Left: Photo of restaurant -->
                     <div class="col-12 col-md-4 text-center">
                         <img src="${sessionScope.photoURL}"
                              alt="${sessionScope.restaurantName}"
                              class="img-fluid img-thumb shadow-sm">
                     </div>
 
+                    <!-- Right: Textual details -->
                     <div class="col-12 col-md-8">
                         <dl class="row mb-0">
                             <dt class="col-sm-4">Restaurant:</dt>
@@ -95,6 +125,7 @@
 
                             <dt class="col-sm-4">Halal:</dt>
                             <dd class="col-sm-8">
+                                <!-- Conditional logic to display halal status -->
                                 <c:choose>
                                     <c:when test="${sessionScope.halalCertified eq true}">Yes</c:when>
                                     <c:when test="${sessionScope.halalCertified eq false}">No</c:when>
@@ -107,7 +138,11 @@
 
                 <hr class="my-4">
 
-                <!-- -------- Menu items -------- -->
+                <!-- 
+                    Section: Menu items submitted
+                    - If empty, shows placeholder message
+                    - Otherwise, loops and displays each item
+                -->
                 <h5 class="fw-semibold mb-3"><i class="fas fa-utensils me-1"></i> Submitted Menu Items</h5>
 
                 <c:if test="${empty sessionScope.menus}">
@@ -117,12 +152,14 @@
                 <c:forEach var="item" items="${sessionScope.menus}">
                     <div class="border rounded p-3 mb-3">
                         <div class="row g-3 align-items-center">
+                            <!-- Left: Dish image -->
                             <div class="col-12 col-lg-3 text-center">
                                 <img src="${item.image_url}"
                                      alt="${item.dish_name}"
                                      class="img-fluid"
                                      style="max-height:140px;object-fit:cover;border-radius:6px">
                             </div>
+                            <!-- Right: Dish info -->
                             <div class="col-12 col-lg-9">
                                 <h6 class="mb-1 fw-semibold">
                                     ${item.dish_name}
@@ -135,10 +172,13 @@
                     </div>
                 </c:forEach>
 
-
                 <hr class="my-4">
 
-                <!-- -------- Admin decision form -------- -->
+                <!-- 
+                    Admin decision form
+                    - Two dropdowns: one for food spot, one for menu
+                    - Optional rejection reason
+                -->
                 <h5 class="fw-semibold mb-3">Admin Decision</h5>
 
                 <form action="ApprovalDecisionServlet" method="post">
@@ -188,12 +228,15 @@
         </div><!-- card -->
     </main>
 
-    <!-- ===== footer ===== -->
+    <!-- 
+        Footer with contact email
+    -->
     <footer class="text-center text-white-50 py-3 mt-auto">
         © 2025 LoFi · <a href="mailto:support@lofi.my" class="text-white-50">support@lofi.my</a>
     </footer>
 </div>
 
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

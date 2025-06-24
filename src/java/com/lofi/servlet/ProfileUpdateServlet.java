@@ -10,38 +10,43 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Handles updates to a user's profile (name and phone).
+ */
 public class ProfileUpdateServlet extends HttpServlet {
 
     private static final Logger LOG = Logger.getLogger(ProfileUpdateServlet.class.getName());
 
+    /**
+     * POST: Process the submitted profile changes.
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        /* -------- authentication -------- */
-        HttpSession session = req.getSession(false);
+        // -------- Step 1: Check authentication --------
+        HttpSession session = req.getSession(false); // Don’t create new session
         if (session == null || session.getAttribute("userId") == null) {
             res.sendRedirect("login.jsp");
             return;
         }
         int userId = (Integer) session.getAttribute("userId");
 
-        /* -------- read & validate -------- */
+        // -------- Step 2: Read form data & validate --------
         String name  = req.getParameter("name");
         String phone = req.getParameter("phone");
 
-        if (name == null || name.isBlank() ||
-            phone == null || phone.isBlank()) {
+        if (name == null || name.isBlank() || phone == null || phone.isBlank()) {
             res.sendRedirect("profile.jsp?err=missing");
             return;
         }
 
-        /* -------- fetch current user -------- */
+        // -------- Step 3: Fetch current user --------
         User u;
         try {
             u = UserDAO.findById(userId);
-            if (u == null) {                     // should never happen
-                res.sendRedirect("login.jsp");
+            if (u == null) {
+                res.sendRedirect("login.jsp"); // Defensive: Should not happen
                 return;
             }
         } catch (SQLException ex) {
@@ -49,26 +54,28 @@ public class ProfileUpdateServlet extends HttpServlet {
             throw new ServletException(ex);
         }
 
-        /* -------- update & persist -------- */
-        u.setName (name.trim());
+        // -------- Step 4: Update user object & persist to DB --------
+        u.setName(name.trim());
         u.setPhone(phone.trim());
 
         try {
-            UserDAO.updateProfile(u);            // only name & phone
+            UserDAO.updateProfile(u); // Only name and phone
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, "Profile update failed", ex);
             throw new ServletException(ex);
         }
 
-        /* -------- keep session in-sync -------- */
-        session.setAttribute("name",  u.getName());
+        // -------- Step 5: Keep session attributes in sync --------
+        session.setAttribute("name", u.getName());
         session.setAttribute("phone", u.getPhone());
 
-        /* -------- done -------- */
+        // -------- Step 6: Redirect to confirm success --------
         res.sendRedirect("profile.jsp?ok=1");
     }
 
-    /* GET → just bounce back */
+    /**
+     * GET: Just redirect to profile page.
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException {

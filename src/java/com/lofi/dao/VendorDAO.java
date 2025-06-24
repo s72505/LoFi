@@ -7,7 +7,10 @@ import java.util.List;
 
 public final class VendorDAO {
 
-    /**  All submissions (old + new) by ONE vendor  */
+    /** 
+     * Fetches all submissions (both pending and reviewed) by a specific vendor (user).
+     * Returns minimal fields needed for vendor dashboard.
+     */
     public static List<FoodSpotApproval> listSubmissions(int userId) throws SQLException {
 
         String sql = """
@@ -21,11 +24,13 @@ public final class VendorDAO {
         try (Connection c = DBHelper.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
 
+            // Bind userId to the SQL query
             ps.setInt(1, userId);
 
             try (ResultSet r = ps.executeQuery()) {
                 List<FoodSpotApproval> list = new ArrayList<>();
                 while (r.next()) {
+                    // Only basic data is loaded; other fields are set to null
                     FoodSpotApproval f = new FoodSpotApproval(
                             r.getInt("request_id"),
                             userId,
@@ -42,5 +47,5 @@ public final class VendorDAO {
         }
     }
 
-    private VendorDAO() { }   // utility class
+    private VendorDAO() { }   // Private constructor to prevent instantiation – utility class
 }

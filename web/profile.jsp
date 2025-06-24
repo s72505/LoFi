@@ -1,6 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+<!-- Redirect user to login if not authenticated -->
 <c:if test="${empty sessionScope.userId}">
     <c:redirect url="login.jsp"/>
 </c:if>
@@ -8,12 +9,14 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <!-- Page meta and Bootstrap + Font Awesome links -->
         <meta charset="UTF-8">
         <title>LoFi – My Profile</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
         <style>
+            /* Background styling and card transparency */
             body  { 
                 background:rgba(0,0,0,.5) 
             }
@@ -22,26 +25,31 @@
             }
         </style>
     </head>
+
         <!-- ===== alerts from ChangePasswordServlet ===== -->
+        <!-- Show alert if current password is incorrect -->
         <c:if test="${param.pwdErr == 'wrong'}">
             <div class="alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
                  style="z-index:2000;" role="alert">
                 Current password is incorrect.
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-            <!-- reopen the modal automatically -->
+            <!-- Reopen password modal automatically -->
             <script>
                 window.addEventListener('DOMContentLoaded', () => {
                     new bootstrap.Modal(document.getElementById('pwdModal')).show();
                 });
             </script>
         </c:if>
+
+        <!-- Show alert if new password is the same as current password -->
         <c:if test="${param.pwdErr == 'same'}">
             <div class="alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
                  style="z-index:2000;" role="alert">
                 Your new password must be different from the current one.
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
+            <!-- Reopen password modal automatically -->
             <script>
                 window.addEventListener('DOMContentLoaded', () => {
                     new bootstrap.Modal(document.getElementById('pwdModal')).show();
@@ -49,7 +57,7 @@
             </script>
         </c:if>
 
-
+        <!-- Show success message if password changed -->
         <c:if test="${param.pwdOk == '1'}">
             <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
                  style="z-index:2000;" role="alert">
@@ -60,7 +68,7 @@
 
     <body class="vh-100 d-flex flex-column h-100 overflow-auto">
 
-        <!-- blurred BG -->
+        <!-- Background blur and tint -->
         <div class="position-fixed top-0 start-0 w-100 h-100"
              style="background:url('img/loginBackground.jpg') center/cover no-repeat fixed; 
              filter:blur(5px);z-index:0;"></div>
@@ -72,6 +80,7 @@
             <!-- ===== header ===== -->
             <header class="container-fluid py-2">
                 <div class="d-flex justify-content-between align-items-center">
+                    <!-- Back to home and logo -->
                     <div class="d-flex align-items-center">'
                         <a href="Home" class="btn btn-sm btn-outline-light me-3">
                            <i class="fas fa-arrow-left"></i> Back to Home
@@ -79,6 +88,7 @@
                         <img src="img/LoFi.png" alt="LoFi logo" class="rounded-circle me-2" style="height:48px;">
                         <span class="h4 mb-0 text-white">Local Food Finder</span>
                     </div>
+                    <!-- Logout button -->
                     <form action="Logout" method="get" class="m-0">
                         <button class="btn btn-sm btn-outline-light">
                             <i class="fas fa-sign-out-alt me-1"></i> Logout
@@ -96,6 +106,7 @@
                             <div class="card-body">
                                 <h4 class="card-title mb-4 text-center">My Profile</h4>
 
+                                <!-- Display profile details -->
                                 <dl class="row mb-0">
                                     <dt class="col-sm-4">Name:</dt>
                                     <dd class="col-sm-8">${sessionScope.name}</dd>
@@ -112,13 +123,15 @@
 
                                 <hr>
 
+                                <!-- Buttons to trigger modals -->
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                                    <!-- triggers -->
+                                    <!-- Open update profile modal -->
                                     <button class="btn btn-dark me-md-2"
                                             data-bs-toggle="modal" data-bs-target="#editModal">
                                         <i class="fas fa-user-pen me-1"></i> Update Profile
                                     </button>
 
+                                    <!-- Open change password modal -->
                                     <button class="btn btn-outline-dark"
                                             data-bs-toggle="modal" data-bs-target="#pwdModal">
                                         <i class="fas fa-key me-1"></i> Change Password
@@ -142,6 +155,7 @@
              =========================================================== -->
         <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
+                <!-- Profile update form -->
                 <form action="ProfileUpdateServlet" method="post" class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Update Profile</h5>
@@ -149,19 +163,21 @@
                     </div>
 
                     <div class="modal-body">
+                        <!-- Editable name field -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Full Name</label>
                             <input type="text" name="name" class="form-control"
                                    value="${sessionScope.name}" required>
                         </div>
 
+                        <!-- Editable phone field -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Phone</label>
                             <input type="tel" name="phone" class="form-control"
                                    value="${sessionScope.phone}" required>
                         </div>
 
-                        <!-- e-mail shown but read-only (cannot be changed) -->
+                        <!-- Read-only email field -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold">E-mail</label>
                             <input type="email" class="form-control" value="${sessionScope.email}" disabled>
@@ -169,6 +185,7 @@
                     </div>
 
                     <div class="modal-footer">
+                        <!-- Modal actions -->
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-dark">Save Changes</button>
                     </div>
@@ -181,6 +198,7 @@
              =========================================================== -->
         <div class="modal fade" id="pwdModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
+                <!-- Password change form -->
                 <form action="ChangePasswordServlet" method="post" class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Change Password</h5>
@@ -188,16 +206,19 @@
                     </div>
 
                     <div class="modal-body">
+                        <!-- Current password field -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Current Password</label>
                             <input type="password" name="currentPwd" class="form-control" required minlength="6">
                         </div>
 
+                        <!-- New password input -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold">New Password</label>
                             <input type="password" name="newPwd" id="newPwd" class="form-control" required minlength="6">
                         </div>
 
+                        <!-- Confirm new password input -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Confirm New Password</label>
                             <input type="password" name="confirmPwd" id="confirmPwd" class="form-control" required minlength="6">
@@ -206,6 +227,7 @@
                     </div>
 
                     <div class="modal-footer">
+                        <!-- Modal actions -->
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" id="pwdSubmit" class="btn btn-dark" disabled>Update Password</button>
                     </div>
@@ -216,7 +238,7 @@
         <!-- ===== Bootstrap JS (required for modals) ===== -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
 
-        <!-- simple client-side password-match check -->
+        <!-- ===== client-side JS to validate password match ===== -->
         <script>
         const newPwd  = document.getElementById('newPwd');
         const confirm = document.getElementById('confirmPwd');

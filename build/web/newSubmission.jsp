@@ -1,9 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page session="true" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Meta and external stylesheets -->
     <meta charset="UTF-8">
     <title>New Food Spot Submission - LoFi</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,16 +16,20 @@
         .card { background:#f3ece2; opacity:.90; }
     </style>
 </head>
+
 <body class="vh-100 d-flex flex-column h-100 overflow-auto">
 
+<!-- Background layers: blurred image + dark tint overlay -->
 <div class="position-fixed top-0 start-0 w-100 h-100"
      style="background:url('img/loginBackground.jpg') center/cover no-repeat fixed;
             filter:blur(5px); z-index:0;"></div>
 <div class="position-fixed top-0 start-0 w-100 h-100"
      style="background:rgba(0,0,0,.55); z-index:0;"></div>
 
+<!-- Main wrapper -->
 <div class="d-flex flex-column h-100" style="z-index:1; position:relative;">
 
+    <!-- Header with back button, logo, and logout -->
     <header class="container-fluid py-2">
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
@@ -41,18 +47,23 @@
         </div>
     </header>
 
+    <!-- Main content area -->
     <main class="container my-4 flex-grow-1 overflow-auto pt-3">
-        
+
+        <!-- Display error message if exists -->
         <c:if test="${not empty err}">
             <div class="alert alert-danger shadow-sm">${err}</div>
         </c:if>
 
+        <!-- Step 1: Spot Details Form -->
         <div class="card shadow-lg mb-4">
             <div class="card-header bg-dark text-white">
                 <h4 class="mb-0">Step 1: Food Spot Details</h4>
             </div>
             <div class="card-body p-4">
                 <form action="SubmissionServlet" method="post">
+
+                    <!-- Show input form if spot has not been submitted yet -->
                     <c:if test="${empty sessionScope.submissionSpot}">
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -64,16 +75,18 @@
                                 <input type="text" id="address" name="address" class="form-control" required>
                             </div>
                         </div>
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="googleMapsURL" class="form-label fw-bold">Google Maps URL</label>
                                 <input type="url" id="googleMapsURL" name="googleMapsURL" class="form-control">
                             </div>
-                             <div class="col-md-6 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <label for="photoURL" class="form-label fw-bold">Photo URL</label>
                                 <input type="url" id="photoURL" name="photoURL" class="form-control">
                             </div>
                         </div>
+
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <label for="openHours" class="form-label fw-bold">Opening Hour</label>
@@ -88,15 +101,17 @@
                                 <input type="text" id="workingDays" name="workingDays" class="form-control" placeholder="e.g., Mon - Sat">
                             </div>
                         </div>
+
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" id="halalCertified" name="halalCertified" value="true">
                             <label class="form-check-label fw-bold" for="halalCertified">Halal Certified</label>
                         </div>
+
                         <button type="submit" name="action" value="set_spot_details" class="btn btn-primary">Save Details & Add Menu</button>
                     </c:if>
 
+                    <!-- If spot is already saved in session -->
                     <c:if test="${not empty sessionScope.submissionSpot}">
-                        <%-- ========== CORRECTED PROPERTY NAMES HERE ========== --%>
                         <h5 class="card-title">${sessionScope.submissionSpot.restaurantName}</h5>
                         <p class="card-text">${sessionScope.submissionSpot.address}</p>
                         <p class="text-success fw-bold"><i class="fas fa-check-circle"></i> Details saved. You can now add menu items below.</p>
@@ -105,12 +120,15 @@
             </div>
         </div>
 
+        <!-- Step 2: Menu Section -->
         <c:if test="${not empty sessionScope.submissionSpot}">
             <div class="card shadow-lg">
                 <div class="card-header bg-dark text-white">
                     <h4 class="mb-0">Step 2: Menu Items</h4>
                 </div>
                 <div class="card-body p-4">
+
+                    <!-- Menu Table -->
                     <h5>Submitted Menu Items</h5>
                     <div class="table-responsive mb-4">
                         <table class="table table-striped table-bordered">
@@ -123,9 +141,9 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <!-- Loop through menu items -->
                                 <c:forEach var="menu" items="${sessionScope.submissionMenus}">
                                     <tr>
-                                        <%-- These property names are also corrected --%>
                                         <td>${menu.dish_name}</td>
                                         <td>RM ${String.format("%.2f", menu.price)}</td>
                                         <td>${menu.cuisine_type}</td>
@@ -139,6 +157,7 @@
                                         </td>
                                     </tr>
                                 </c:forEach>
+                                <!-- Fallback if no menus -->
                                 <c:if test="${empty sessionScope.submissionMenus}">
                                     <tr>
                                         <td colspan="4" class="text-center text-muted">No menu items added yet.</td>
@@ -150,6 +169,7 @@
 
                     <hr>
 
+                    <!-- Add new menu item form -->
                     <h5 class="mt-4">Add a New Menu Item</h5>
                     <form action="SubmissionServlet" method="post">
                         <div class="row">
@@ -162,10 +182,12 @@
                                 <input type="number" id="price" name="price" step="0.01" class="form-control" required>
                             </div>
                         </div>
+
                         <div class="mb-3">
                             <label for="description" class="form-label fw-bold">Description</label>
                             <textarea id="description" name="description" class="form-control" rows="2"></textarea>
                         </div>
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="cuisineType" class="form-label fw-bold">Cuisine Type</label>
@@ -187,6 +209,7 @@
                                 <input type="url" id="imageURL" name="imageURL" class="form-control">
                             </div>
                         </div>
+
                         <button type="submit" name="action" value="add_menu" class="btn btn-secondary">
                             <i class="fas fa-plus"></i> Add This Menu Item
                         </button>
@@ -194,8 +217,9 @@
                 </div>
             </div>
 
+            <!-- Final submission button -->
             <div class="d-grid gap-2 my-4">
-                 <form action="SubmissionServlet" method="post" onsubmit="return confirm('Are you sure you want to submit this food spot and all its menu items for approval?')">
+                <form action="SubmissionServlet" method="post" onsubmit="return confirm('Are you sure you want to submit this food spot and all its menu items for approval?')">
                     <button type="submit" name="action" value="final_submit" class="btn btn-success btn-lg w-100" <c:if test="${empty sessionScope.submissionMenus}">disabled</c:if>>
                         <i class="fas fa-check-circle me-2"></i>Finalize and Submit for Approval
                     </button>
@@ -204,6 +228,7 @@
         </c:if>
     </main>
 
+    <!-- Footer -->
     <footer class="text-center text-white-50 py-3 mt-auto">
         © 2025 LoFi · <a href="mailto:support@lofi.my" class="text-white-50">support@lofi.my</a>
     </footer>

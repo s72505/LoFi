@@ -2,6 +2,9 @@ package com.lofi.model;
 
 public class FoodSpot {
 
+    // =======================
+    // Fields / Attributes
+    // =======================
     private int spotId;
     private String restaurantName;
     private String address;
@@ -13,10 +16,15 @@ public class FoodSpot {
     private double rating;
     private String photoUrl;
 
-//    constructors
+    // =======================
+    // Constructors
+    // =======================
+
+    // Default constructor
     public FoodSpot() {
     }
 
+    // Parameterized constructor for full initialization
     public FoodSpot(int spotId, String restaurantName, String address, String googleMapsUrl, boolean halalFlag, String openHours, String closedHours, String workingDays, double rating, String photoUrl) {
         this.spotId = spotId;
         this.restaurantName = restaurantName;
@@ -30,7 +38,9 @@ public class FoodSpot {
         this.photoUrl = photoUrl;
     }
 
-    /* ---------- getters & setters ---------- */
+    // =======================
+    // Getters and Setters
+    // =======================
 
     public int getSpotId() {
         return spotId;
@@ -111,18 +121,4 @@ public class FoodSpot {
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
     }
-    
-    
-//    /* ---------- utility ---------- */
-//    @Override
-//    public String toString() {
-//        return "FoodSpot{" +
-//                "spotId=" + spotId +
-//                ", name='" + restaurantName + '\'' +
-//                ", address='" + address + '\'' +
-//                ", halal=" + halalFlag +
-//                ", cuisine='" + cuisineType + '\'' +
-//                '}';
-//    }
 }
-

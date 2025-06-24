@@ -14,28 +14,32 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class AddReviewServlet extends HttpServlet {
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Get the current session, but don't create a new one
         HttpSession session = request.getSession(false);
 
-        // Security: Ensure a customer is logged in
+        // ===== Security Check: Ensure a customer is logged in =====
         if (session == null || !"customer".equals(session.getAttribute("role"))) {
             response.sendRedirect("login.jsp");
             return;
         }
 
         try {
+            // ===== Get form inputs from the POST request =====
             int spotId = Integer.parseInt(request.getParameter("spotId"));
             int rating = Integer.parseInt(request.getParameter("rating"));
             String comment = request.getParameter("comment");
             int userId = (Integer) session.getAttribute("userId");
 
-            // Basic validation
+            // ===== Input validation: Ensure rating is 1–5 and comment isn't blank =====
             if (comment == null || comment.isBlank() || rating < 1 || rating > 5) {
-                 response.sendRedirect("MenuServlet?id=" + spotId + "&error=InvalidInput");
-                 return;
+                response.sendRedirect("MenuServlet?id=" + spotId + "&error=InvalidInput");
+                return;
             }
 
+            // ===== Construct Review object to represent the new review =====
             Review review = new Review();
             review.setSpotId(spotId);
             review.setUserId(userId);
@@ -43,25 +47,25 @@ public class AddReviewServlet extends HttpServlet {
             review.setComment(comment);
             review.setCreatedAt(LocalDateTime.now());
 
-            // First, add the new review to the 'reviews' table
+            // ===== Persist the review to the database =====
             ReviewDAO.addReview(review);
 
-            // ========== AVERAGE RATING UPDATE LOGIC IMPLEMENTED HERE ==========
+            // ===== AVERAGE RATING UPDATE LOGIC IMPLEMENTED HERE =====
 
-            // 1. Recalculate the new average rating from all reviews for this spot
+            // Step 1: Calculate the new average rating for the spot
             double averageRating = ReviewDAO.calculateAverageRating(spotId);
-            
-            // 2. Update the 'rating' in the 'food_spots' table with the new average
-            FoodSpotDAO.updateRating(spotId, averageRating);
-            
-            // =================================================================
 
-            // Redirect back to the menu page to see the new review and updated rating
+            // Step 2: Update the spot's rating in the main food_spots table
+            FoodSpotDAO.updateRating(spotId, averageRating);
+
+            // ===== Redirect back to the menu page to reflect the new review =====
             response.sendRedirect("MenuServlet?id=" + spotId);
 
         } catch (NumberFormatException e) {
+            // Handle invalid number formats for inputs
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid input format.");
         } catch (SQLException e) {
+            // Handle database exceptions and forward to error page
             throw new ServletException("Database error while adding review.", e);
         }
     }
