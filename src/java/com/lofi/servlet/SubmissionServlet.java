@@ -62,7 +62,7 @@ public class SubmissionServlet extends HttpServlet {
         spot.setRestaurant_name(request.getParameter("restaurantName"));
         spot.setAddress(request.getParameter("address"));
 
-        // ========== CORRECTED METHOD CALL HERE ==========
+        // ========== THIS IS THE CORRECTED LINE ==========
         spot.setMaps_url(request.getParameter("googleMapsURL"));
 
         spot.setPhoto_url(request.getParameter("photoURL"));
@@ -92,7 +92,6 @@ public class SubmissionServlet extends HttpServlet {
             null // status
         );
         
-        // Use a temporary unique ID for deletion purposes before final submission
         newItem.setItem_id(Math.abs(UUID.randomUUID().hashCode()));
         menus.add(newItem);
         session.setAttribute("submissionMenus", menus);
@@ -120,10 +119,8 @@ public class SubmissionServlet extends HttpServlet {
         spot.setSubmitted_time(LocalDateTime.now());
         
         try {
-            // This single DAO method handles the entire transaction
             AdminDAO.createSubmission(spot, menus);
 
-            // Clear session attributes after successful submission
             session.removeAttribute("submissionSpot");
             session.removeAttribute("submissionMenus");
 
@@ -131,7 +128,7 @@ public class SubmissionServlet extends HttpServlet {
             request.getRequestDispatcher("submissionResult.jsp").forward(request, response);
 
         } catch (SQLException e) {
-            e.printStackTrace(); // Important for debugging
+            e.printStackTrace(); 
             request.setAttribute("err", "A database error occurred: " + e.getMessage());
             request.getRequestDispatcher("newSubmission.jsp").forward(request, response);
         }

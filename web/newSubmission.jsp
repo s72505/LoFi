@@ -9,25 +9,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <%-- Added styles to match the rest of your application --%>
     <style>
         body  { background:rgba(0,0,0,.5) }
-        .card { background:#f3ece2; opacity:.90; } /* Adjusted opacity slightly for better readability on a form */
+        .card { background:#f3ece2; opacity:.90; }
     </style>
 </head>
 <body class="vh-100 d-flex flex-column h-100 overflow-auto">
 
-<%-- Blurred Background & Tint - Copied from your other pages --%>
 <div class="position-fixed top-0 start-0 w-100 h-100"
      style="background:url('img/loginBackground.jpg') center/cover no-repeat fixed;
             filter:blur(5px); z-index:0;"></div>
 <div class="position-fixed top-0 start-0 w-100 h-100"
      style="background:rgba(0,0,0,.55); z-index:0;"></div>
 
-<%-- Main Page Wrapper - Copied from your other pages --%>
 <div class="d-flex flex-column h-100" style="z-index:1; position:relative;">
 
-    <%-- Header - Adapted for this page --%>
     <header class="container-fluid py-2">
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
@@ -45,10 +41,8 @@
         </div>
     </header>
 
-    <%-- Main Content - This is where the form from the previous step is placed --%>
     <main class="container my-4 flex-grow-1 overflow-auto pt-3">
         
-        <%-- Display any error messages passed from the servlet --%>
         <c:if test="${not empty err}">
             <div class="alert alert-danger shadow-sm">${err}</div>
         </c:if>
@@ -102,7 +96,8 @@
                     </c:if>
 
                     <c:if test="${not empty sessionScope.submissionSpot}">
-                        <h5 class="card-title">${sessionScope.submissionSpot.restaurant_name}</h5>
+                        <%-- ========== CORRECTED PROPERTY NAMES HERE ========== --%>
+                        <h5 class="card-title">${sessionScope.submissionSpot.restaurantName}</h5>
                         <p class="card-text">${sessionScope.submissionSpot.address}</p>
                         <p class="text-success fw-bold"><i class="fas fa-check-circle"></i> Details saved. You can now add menu items below.</p>
                     </c:if>
@@ -130,6 +125,7 @@
                             <tbody>
                                 <c:forEach var="menu" items="${sessionScope.submissionMenus}">
                                     <tr>
+                                        <%-- These property names are also corrected --%>
                                         <td>${menu.dish_name}</td>
                                         <td>RM ${String.format("%.2f", menu.price)}</td>
                                         <td>${menu.cuisine_type}</td>
@@ -208,7 +204,6 @@
         </c:if>
     </main>
 
-    <%-- Footer - Copied from your other pages --%>
     <footer class="text-center text-white-50 py-3 mt-auto">
         © 2025 LoFi · <a href="mailto:support@lofi.my" class="text-white-50">support@lofi.my</a>
     </footer>
