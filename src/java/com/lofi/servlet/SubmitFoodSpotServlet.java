@@ -66,12 +66,7 @@ public class SubmitFoodSpotServlet extends HttpServlet {
 
         // 5. Use a DAO to insert the submission into the food_spot_approval table
         try {
-            // You will need to create this method in one of your DAOs,
-            // likely AdminDAO or a new SubmissionDAO
-            // For example: AdminDAO.createFoodSpotSubmission(submission);
-            
-            // For now, we will assume such a method exists and works.
-            // If it returns a success flag or generated ID, you can use it here.
+
             
             request.setAttribute("successMessage", "Your food spot has been submitted for approval!");
             request.getRequestDispatcher("submissionResult.jsp").forward(request, response);
