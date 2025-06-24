@@ -13,6 +13,7 @@
         body  { background:rgba(0,0,0,.5); }
         .card { background:#f3ece2; opacity:.85; }
         .card:hover { opacity:1; }
+        .fav-btn { position:absolute; top:.5rem; right:.5rem; z-index:5; }
     </style>
 </head>
 <body class="vh-100 d-flex flex-column h-100 overflow-auto">
@@ -33,7 +34,7 @@
                 <img src="img/LoFi.png" alt="LoFi" class="rounded-circle me-2" style="height:48px;">
                 <span class="h4 mb-0 text-white">Local Food Finder</span>
             </div>
-            <form action="Logout" method="post" class="m-0">
+            <form action="Logout" method="get" class="m-0">
                 <button class="btn btn-sm btn-outline-light"><i class="fa fa-sign-out-alt me-1"></i> Logout</button>
             </form>
         </div>
@@ -49,7 +50,17 @@
                 <c:when test="${not empty spots}">
                     <c:forEach var="spot" items="${spots}">
                         <div class="col">
-                            <div class="card h-100 shadow-lg">
+                            <div class="card h-100 shadow-lg position-relative">
+                                <c:if test="${sessionScope.role eq 'customer'}">
+                                    <form action="FavouriteServlet" method="post" class="fav-btn">
+                                        <input type="hidden" name="action" value="add">
+                                        <input type="hidden" name="spotId" value="${spot.spotId}">
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Add to Favourites">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                    </form>
+                                </c:if>
+
                                 <img src="${spot.photoUrl}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="${spot.restaurantName}">
                                 <div class="card-body">
                                     <h5 class="card-title">${spot.restaurantName}</h5>
