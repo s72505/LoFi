@@ -240,18 +240,18 @@
 
         <!-- ===== client-side JS to validate password match ===== -->
         <script>
-        const newPwd  = document.getElementById('newPwd');
-        const confirm = document.getElementById('confirmPwd');
-        const help    = document.getElementById('pwdHelp');
-        const submit  = document.getElementById('pwdSubmit');
+            const newPwd  = document.getElementById('newPwd');
+            const confirm = document.getElementById('confirmPwd');
+            const help    = document.getElementById('pwdHelp');
+            const submit  = document.getElementById('pwdSubmit');
 
-        function checkMatch(){
-            const ok = newPwd.value && newPwd.value === confirm.value;
-            help.classList.toggle('d-none', ok);
-            submit.disabled = !ok;
-        }
+            function checkMatch(){
+                const ok = newPwd.value && newPwd.value === confirm.value;
+                help.classList.toggle('d-none', ok);
+                submit.disabled = !ok;
+            }
 
-        [newPwd, confirm].forEach(el => el.addEventListener('input', checkMatch));
+            [newPwd, confirm].forEach(el => el.addEventListener('input', checkMatch));
         </script>
     </body>
 </html>
