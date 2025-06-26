@@ -15,7 +15,7 @@ public class MenuApproval implements Serializable {
     private String dish_name;      // Name of the dish
     private double price;          // Price of the dish
     private String description;    // Description of the dish
-    private String cuisine_type;   // Cuisine category (e.g., Malay, Western, Thai)
+    private String cuisine_type;   // Cuisine category 
     private String image_url;      // URL to an image of the dish
     private String status;         // Approval status (e.g., pending, approved, rejected)
 
